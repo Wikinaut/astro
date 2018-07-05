@@ -121,10 +121,10 @@ HERE;
 
 	list( $j, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $laenge );
 
-	PositionSonne( "Sonne", $breite, $t );
+	calcSun( $breite, $t );
 	echo "\n";
-	PositionMond( "Mond", $breite, $t );
-	echo "\n\n";
+	calcMoon( $breite, $t );
+	echo "\n";
 
 	$vm = NaechsterVM( $j );
 
@@ -136,10 +136,10 @@ HERE;
 	$d = Date( "d.m.Y", jd2unix( $vm - 1.0 ) );
 	list( $j, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $laenge );
 
-	PositionSonne( "Sonne", $breite, $t );
+	calcSun( $breite, $t );
+	echo " ";
+	calcMoon( $breite, $t );
 	echo "\n";
-	PositionMond( "Mond", $breite, $t );
-	echo "\n\n";
 
 	echo str_repeat( "*", 40 ) . "\n";
 	# echo "VM " . date('d.m.Y H:i:s', jd2unix( $vm ) );
@@ -152,26 +152,26 @@ HERE;
 		# echo " Totale MF " . date('d.m.Y H:i:s', jd2unix( $tMF ) ) . "\n";
 		echo " Totale MF " . date('H:i:s', jd2unix( $tMF ) ) . "\n";
 	} else {
-		echo PHP_EOL;
+		echo "\n";
 	}
 	echo str_repeat( "*", 40 ) . "\n";
 	
 	$d = Date( "d.m.Y", jd2unix( $vm ) );
 	list( $j, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $laenge );
 
-	PositionSonne( "Sonne", $breite, $t );
+	calcSun( $breite, $t );
+	echo " ";
+	calcMoon( $breite, $t );
 	echo "\n";
-	PositionMond( "Mond", $breite, $t );
-	echo "\n\n";
 
 
 	$d = Date( "d.m.Y", jd2unix( $vm + 1.0 ) );
 	list( $j, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm + 1.0 ) ), $zeitzone, $laenge );
 
-	PositionSonne( "Sonne", $breite, $t );
+	calcSun( $breite, $t );
+	echo " ";
+	calcMoon( $breite, $t );
 	echo "\n";
-	PositionMond( "Mond", $breite, $t );
-	echo "\n\n";
 
 
 	/* 
@@ -205,7 +205,7 @@ HERE;
 exit;
 
 
-function Positionmond( $obj, $breite, $t ) {
+function calcMoon( $breite, $t ) {
 
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
@@ -254,7 +254,7 @@ function Positionmond( $obj, $breite, $t ) {
 		$f2 = $m[3][2];
 		$d2 = Interpolation( $f0, $f1, $f2, $p );
 
-		calcRiseSet( $obj, $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
+		calcRiseSet( "Moon", $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
 
 		$a0 = $a2;
 		$d0 = $d2;
@@ -262,11 +262,11 @@ function Positionmond( $obj, $breite, $t ) {
 
 	}
 	
-	calcVisibility( $obj, $m8, $w8, $v2 );
+	calcVisibility( "Moon", $m8, $w8, $v2 );
 }
 
 
-function PositionSonne( $obj, $breite, $t ) {
+function calcSun( $breite, $t ) {
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
 
@@ -305,7 +305,7 @@ function PositionSonne( $obj, $breite, $t ) {
 		$a2 = $a[1] + $p * $da;
 		$d2 = $d[1] + $p * $dd;
 
-		calcRiseSet( $obj, $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
+		calcRiseSet( "Sun", $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
 
 		$a0 = $a2;
 		$d0 = $d2;
@@ -313,7 +313,7 @@ function PositionSonne( $obj, $breite, $t ) {
 
 	}
 	
-	calcVisibility( $obj, $m8, $w8, $v2 );
+	calcVisibility( "Sun", $m8, $w8, $v2 );
 }
 
 
@@ -359,7 +359,7 @@ function Kalender( $date, $zeitzone, $laenge ) {
 
 	$customDate = date_create( "$d.$m.$year" );
 	# echo date_format( $customDate, "d.m.Y" ) . " JD: " . sprintf( "%.4f", $jd ) . " ";
-	echo date_format( $customDate, "d.m.Y" ) . ":\n";
+	echo date_format( $customDate, "d.m.Y" ) . ": ";
 
 	# Julian days since 2000 January 1.5 = JD 2451545.0
 	$t = $jd - 2451545.0 + $f;
@@ -438,7 +438,7 @@ function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, 
 	$l0 = $t0 + $hour * k1;
 	$l2 = $l0 + k1;
 
-	if ( ( $obj == "Mond" ) && ( $a2 < $a0 ) ) {
+	if ( ( $obj == "Moon" ) && ( $a2 < $a0 ) ) {
 		$a2 = $a2 + pi2;
 	}
 
@@ -521,7 +521,7 @@ function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, 
 
 	}
 
-	$object = ( $obj === "Mond" ) ? "M" : "S";
+	$object = ( $obj === "Moon" ) ? "M" : "S";
 	echo "$object${riseOrSet} $time Az ${azimut}° ";
 
 	if ( $eventCnt == 2 ) {
@@ -641,7 +641,7 @@ function BahndatenMond( $t ) {
 
 	# echo "   Mond  " . sprintf( "t:%10.1f  v:%8.5f u:%8.5f w:%8.5f", $t, $v, $u, $w ) . "\n";
 
-	return Winkel( "Mond", $x1 * pi2, $u, $v, $w );
+	return Winkel( "Moon", $x1 * pi2, $u, $v, $w );
 }
 
 
@@ -702,7 +702,7 @@ function BahndatenSonne( $t ) {
 
 	# echo "   Sonne " . sprintf( "t:%10.1f  v:%8.5f u:%8.5f w:%8.5f", $t, $v, $u, $w ) . "\n";
 
-	return Winkel( "Sonne", $x7 * pi2, $u, $v, $w );
+	return Winkel( "Sun", $x7 * pi2, $u, $v, $w );
 }
 
 
@@ -724,10 +724,10 @@ function Winkel( $obj, $L, $u, $v, $w ) {
 	$delta = atan( $v / sqrt( $u ) );
 */
 
-	if ( $obj === "Mond" ) {
+	if ( $obj === "Moon" ) {
 		$scalingFactor = 60.40974;
 	}
-	if ( $obj === "Sonne" ) {
+	if ( $obj === "Sun" ) {
 		$scalingFactor = 1.00021;
 	}
 
@@ -746,21 +746,23 @@ function calcVisibility( $obj, $m8, $w8, $v2 ) {
 	$untergang = "";
 	$sichtbar = "";
 
+	$objDE = ( $obj === "Moon" ) ? "Mond" : "Sonne";
+
 	if ( ( $m8 === 0 ) && ( $w8 === 0 ) ) {
 
-		$sichtbar = ( $v2 > 0.0 ) ? "$obj ganztägig sichtbar" : ( ( $v2 < 0.0 ) ? "$obj ganztätig unsichtbar" : "" );
+		$sichtbar = ( $v2 > 0.0 ) ? "$objDE ganztägig sichtbar" : ( ( $v2 < 0.0 ) ? "$objDE ganztätig unsichtbar" : "" );
 
 	} else {
 
 		if ( $m8 === 0 ) {
 
-			$aufgang = "Kein ${obj}aufgang an diesem Tag.\n";
+			$aufgang = "Kein ${objDE}aufgang an diesem Tag.\n";
 
 		}
 
 		if ( $w8 === 0 ) {
 
-		$untergang = "Kein ${obj}untergang an diesem Tag.\n";
+		$untergang = "Kein ${objDE}untergang an diesem Tag.\n";
 
 		}
 
