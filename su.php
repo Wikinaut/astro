@@ -46,11 +46,11 @@ function readln( $prompt = '' ) {
 
 	if ( function_exists( "readline" ) ) {
 
-		return readline( $prompt );
+		return readline( "$prompt " );
 
 	} else {
 
-		echo $prompt;
+		echo "$prompt ";
 		return rtrim( fgets( STDIN ), "\n" );
 	
 	}
@@ -84,12 +84,14 @@ function Int($x) {
 	
 	/* Eingabe in Stunden, ganzzahlig mit Vorzeichen für E(+) und W(-) */
 
+	echo "Zeitzone des Rechners                    : " . formatZeitzone( Date( "Z" ) / 3600 ) . "\n";
+	echo "Zeitzone nach Länge                      : " . formatZeitzone( $zeitzoneCalculated ) . "\n";
+
 	$zeitzone = readln( "Zeitzone ±h [" . formatZeitzone( $zeitzoneCalculated ) . " (Zeitzone nach Länge)]:");
 	if ( empty( $zeitzone ) ) {
 		$zeitzone = $zeitzoneCalculated;
 	}
 
-	echo "Zeitzone nach Länge:   " . formatZeitzone( $zeitzoneCalculated ) . "\n";
 	echo "Zeitzone nach Eingabe: " . formatZeitzone( $zeitzone ) . "\n";
 
 	$today = Date( "Y.md" );
