@@ -26,6 +26,8 @@
 	ISBN 3-335-00400-0
 
 */
+
+	# echo "Precision: " . ini_get( 'precision' ) . PHP_EOL;
 	define( "DEBUG", false );
 	define( "pi", pi() );
 	define( "pi2", 2.0*pi() );
@@ -109,7 +111,7 @@ Der Algorithmus zur Mondphasenberechnung stammt aus dem Buch
 https://computus.de/mondphase/mondphase.htm (Javascript)
 	
 SA: Sonnenaufgang SU: Sonnenuntergang
-MA: Mondaufgang   MU: Monduntergabng
+MA: Mondaufgang   MU: Monduntergang
 MF: Mondfinsternis
 Az: Azimut
 
