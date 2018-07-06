@@ -574,12 +574,12 @@ function mittag( $Az, $Zeit ) {
 
 function BahndatenMond( $t ) {
 
-	$x1 = getDecimalPart( 0.606434 + 0.03660110129 * $t );
+	$x1 = getDecimalPart( 0.606434 + 0.03660110129 * $t ); // Moon
 	$x2 = getDecimalPart( 0.374897 + 0.03629164709 * $t );
 	$x3 = getDecimalPart( 0.259091 + 0.03674819520 * $t );
 	$x4 = getDecimalPart( 0.827362 + 0.03386319198 * $t );
 	$x5 = getDecimalPart( 0.347343 - 0.00014709391 * $t );
-	$x8 = getDecimalPart( 0.993126 + 0.00273777850 * $t );
+	$x8 = getDecimalPart( 0.993126 + 0.00273777850 * $t ); // Sun
 
 	$T = julianCenturiesSince1900( $t );
 
@@ -614,7 +614,12 @@ function BahndatenMond( $t ) {
 	$v -= 0.00024 * s( $x3 - 2 * $x4 + $x5 );
 	$v -= 0.00021 * $T * s( $x3 + $x5 );
 	$v += 0.00018 * s( $x3 - $x4 + $x5 );
-
+	$v += 0.00016 * s( $x3 + 2 * $x4 );
+	$v += 0.00016 * s( $x2 - $x3 - $x5 - $x8 );
+	$v -= 0.00016 * s( 2 * $x2 - $x3 - $x5 );
+	$v -= 0.00015 * s( $x3 - 2 * $x4 + $x8 );
+	$v -= 0.00012 * s( $x2 - $x3 - 2 * $x4 + $x8 );
+	$v -= 0.00011 * s( $x2 - $x3 - $x5 + $x8 );
 
 	$u = 1.0 - 0.10828 * c( $x2 );
 	$u -= 0.01880 * c( $x2 - 2 * $x4 );
@@ -630,6 +635,8 @@ function BahndatenMond( $t ) {
 	$u += 0.00041 * c( $x2 - 2 * $x3 );
 	$u += 0.00024 * c( $x8 );
 	$u += 0.00017 * c( 2 * $x4 + $x8 );
+	$u += 0.00013 * c( $x2 - 2 * $x4 - $x8 );
+	$u -= 0.00010 * c( $x2 - 4 * $x4 );
 
 	$w = 0.10478 * s( $x2 );
 	$w -= 0.04105 * s( 2 * $x3 + 2 * $x5 );
@@ -663,6 +670,9 @@ function BahndatenMond( $t ) {
 	$w += 0.00023 * s( $x2 - 2 * $x4 - $x5 );
 	$w += 0.00019 * s( $x2 + 2 * $x4 );
 	$w += 0.00012 * s( $x2 - 2 * $x4 - $x8 );
+	$w += 0.00011 * s( $x2 - 2 * $x4 + $x5 );
+	$w += 0.00011 * s( $x2 - 2 * $x3 - 2 * $x4 - $x5 );
+	$w -= 0.00010 * s( 2 * $x4 + $x8 );
 
 	# echo "   Mond  " . sprintf( "t:%10.1f  v:%8.5f u:%8.5f w:%8.5f", $t, $v, $u, $w ) . "\n";
 
@@ -672,13 +682,16 @@ function BahndatenMond( $t ) {
 
 function BahndatenSonne( $t ) {
 
-	$x1 = getDecimalPart( 0.606434 + 0.03660110129 * $t );
+	$x1 = getDecimalPart( 0.606434 + 0.03660110129 * $t ); // Moon
 	$x2 = getDecimalPart( 0.374897 + 0.03629164709 * $t );
 	$x3 = getDecimalPart( 0.259091 + 0.03674819520 * $t );
 	$x4 = getDecimalPart( 0.827362 + 0.03386319198 * $t );
 	$x5 = getDecimalPart( 0.347343 - 0.00014709391 * $t );
-	$x7 = getDecimalPart( 0.779072 + 0.00273790931 * $t );
+	$x7 = getDecimalPart( 0.779072 + 0.00273790931 * $t ); // Sun
 	$x8 = getDecimalPart( 0.993126 + 0.00273777850 * $t );
+	$x13 = getDecimalPart( 0.140023 + 0.00445036173 * $t ); // Venus
+	$x16 = getDecimalPart( 0.053856 + 0.00145561327 * $t ); // Mars
+	$x19 = getDecimalPart( 0.056531 + 0.00023080893 * $t ); // Jupiter
 
 	$T = julianCenturiesSince1900( $t );
 
@@ -710,10 +723,13 @@ function BahndatenSonne( $t ) {
 	$v -= 0.00021 * $T * s( $x7 );
 	$v += 0.00004 * s( $x7 + 2 * $x8 );
 	$v -= 0.00004 * c( $x7 );
+	$v -= 0.00004 * s( $x5 - $x7 );
+	$v += 0.00003 * $T * s( $x7 - $x8 );
 
 	$u = 1.0 - 0.03349 * c( $x8 );
 	$u -= 0.00014 * c( 2.0 * $x8 );
 	$u += 0.00008 * $T * c( $x8 );
+	$u -= 0.00003 * s( $x8 - $x19 );
 
 	$w = -0.00010 - 0.04129 * s( 2.0 * $x7 );
 	$w += 0.03211 * s( $x8 );
@@ -724,6 +740,10 @@ function BahndatenSonne( $t ) {
 	$w += 0.00007 * s(2 * $x8 );
 	$w += 0.00005 * $T * s( 2.0 * $x7 );
 	$w += 0.00003 * s( $x1 - $x7 );
+	$w -= 0.00002 * c( $x8 - $x19 );
+	$w += 0.00002 * s( 4 * $x8 - 8 * $x16 + 3 * $x19 );
+	$w -= 0.00002 * s( $x8 - $x13 );
+	$w -= 0.00002 * c( 2 * $x8 - 2 * $x13 );
 
 	# echo "   Sonne " . sprintf( "t:%10.1f  v:%8.5f u:%8.5f w:%8.5f", $t, $v, $u, $w ) . "\n";
 
