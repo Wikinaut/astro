@@ -42,6 +42,8 @@
 	$Zm = array();
 	$Az = array();
 
+	$eventCnt = 0;
+
 function readln( $prompt = '' ) {
 
 	if ( function_exists( "readline" ) ) {
@@ -112,10 +114,9 @@ Der Algorithmus zur Mondphasenberechnung stammt aus dem Buch
 "Astronomische Algorithmen" von Jean Meeus. 2. Auflage 1994.
 https://computus.de/mondphase/mondphase.htm (Javascript)
 	
-SA: Sonnenaufgang SU: Sonnenuntergang
-MA: Mondaufgang   MU: Monduntergang
-MF: Mondfinsternis
-Az: Azimut
+SA: Sonnenaufgang  SU: Sonnenuntergang
+MA: Mondaufgang    MU: Monduntergang
+MF: Mondfinsternis Az: Azimut
 
 
 HERE;
@@ -126,7 +127,7 @@ HERE;
 	list( $j, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $laenge );
 
 	calcSun( $breite, $t );
-	echo "\n";
+	echo " ";
 	calcMoon( $breite, $t );
 	echo "\n";
 
@@ -530,6 +531,7 @@ function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, 
 
 	if ( $eventCnt == 2 ) {
 		mittag( $Az, $Zeit );
+		$eventCnt = 0;
 	}
 }
 
@@ -560,11 +562,12 @@ function mittag( $Az, $Zeit ) {
 	
 	$std = $Zmittag;
 	$min = ( $Zmittag - Int( $std ) ) * 60.0;
-	$AzMittag = Round( $AzMittag, 2 );
+	$AzMittag = sprintf( "%03.0f", round( $AzMittag, 2 ) );
 	$time = sprintf( "%02d", $std ) . ":" . sprintf( "%02d", $min );
 
-	echo "\nObere Kulmination ";
-	echo "Mittag $time Az " . $AzMittag . "°";
+	# echo "\nObere Kulmination ";
+	# echo "Mittag $time Az " . $AzMittag . "°";
+	echo "Mittag $time ";
 
 }
 
