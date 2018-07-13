@@ -147,15 +147,12 @@ HERE;
 	echo "\n";
 
 	echo str_repeat( "*", 40 ) . "\n";
-	# echo "VM " . date('d.m.Y H:i:s', jd2unix( $vm ) );
-	echo "VM " . date('H:i:s', jd2unix( $vm ) );
+	echo "VM " . gmdate('H:i:s', jd2unix( $vm ) ) . "Z";
 
 	if ( checkMFtime( $pMF, $vm ) ) {
-		# echo " Partielle MF " . date('d.m.Y H:i:s', jd2unix( $pMF ) ) . "\n";
-		echo " Partielle MF " . date('H:i:s', jd2unix( $pMF ) ) . "\n";
+		echo " Partielle MF " . gmdate('H:i:s', jd2unix( $pMF ) ) . "Z\n";
 	} else	if ( checkMFtime( $tMF, $vm ) ) {
-		# echo " Totale MF " . date('d.m.Y H:i:s', jd2unix( $tMF ) ) . "\n";
-		echo " Totale MF " . date('H:i:s', jd2unix( $tMF ) ) . "\n";
+		echo " Totale MF " . gmdate('H:i:s', jd2unix( $tMF ) ) . "Z\n";
 	} else {
 		echo "\n";
 	}
