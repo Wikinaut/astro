@@ -2,9 +2,10 @@
 
 /*
 
-	Mond-und-Sonnen-auf-und-untergang
+	Mond/Sonnen-Auf/Untergang
+	Mond/Sonnenfinsternisse und Vollmonddaten
 
-	basiert auf:
+	basierend auf:
 	https://astronomy.stackexchange.com/questions/24304/expression-for-length-of-sunrise-sunset-as-function-of-latitude-and-day-of-year
 	Section "Here is an implementation of rising/setting times in Basic"
  
@@ -12,7 +13,8 @@
 	20180619 php Version
 	20180701
  
-	Sonnenberechnung aus Bahndaten und Koeffizienten
+	Sonnen- und Mondberechnung aus Bahndaten und Koeffizienten
+
 	Low-precision formulae for planetary positions
 	Fundamental arguments (Van Flandern & Pulkkinen, 1979)
 	https://doi.org/10.1086/190623
@@ -68,18 +70,190 @@ function Int($x) {
 	}
 }
 
-	# Defaultkoordinaten "Berlin, Drachenberg"
+
+function getUrl( $url, $acceptHeader = "" ) {
+
+	$ch = curl_init();
+	curl_setopt_array( $ch, array(
+		CURLOPT_URL => $url,
+		CURLOPT_USERAGENT => 'Astro-Location',
+		CURLOPT_SSL_VERIFYPEER => true,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_FOLLOWLOCATION => true,
+		)
+	);
+
+	if ( $acceptHeader !== "" ) {
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $acceptHeader );
+	}
+
+	$result = curl_exec( $ch );
+	$http_status = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+	curl_close( $ch );
+
+	if ( intval( trim( $http_status ) ) == 200 ) {
+
+		return json_decode( $result, true );
+
+	} else {
+
+		return false;
+
+	}
+
+} 
+
+
+function getTimezoneOffset( $timeUTC ) {
+
+	global  $tzOffsetsRestUrl, $locationTZData;
+
+	$utc = str_replace( '+00:00', 'Z', gmdate( "c", $timeUTC ) );
+	$arr = getUrl(
+			str_replace( '{?date}', "?date=" . $utc, $tzOffsetsRestUrl ),
+			array( "Accept: application/vnd.teleport.v1+json" )
+	);
+
+	$locationTZData = array(
+		"base-offset-min" => $arr["base_offset_min"],
+		"dst-offset-min" => $arr["dst_offset_min"],
+		"total-offset-min" => $arr["total_offset_min"],
+		"short-name" => $arr["short_name"],
+		"end-time" => unix2jd( strtotime( $arr["end_time"] ) ),
+		"transition-time" => unix2jd( strtotime( $arr["transition_time"] ) ),
+	);
+
+	return $locationTZData;
+}
+
+
+function getTimezoneData( $arr ) {
+
+	global $tzOffsetsRestUrl;
+
+	$tzData = $arr["_embedded"]["location:nearest-cities"][0]["_embedded"]["location:nearest-city"]["_embedded"]["city:timezone"];
+	$tzOffsetsRestUrl = $tzData["_links"]["tz:offsets"]["href"];
+
+	// print_r( $tzData );
+
+	return array (
+		"iana-name" => $tzData["iana_name"],
+		"base-offset-min" => $tzData["_embedded"]["tz:offsets-now"]["base_offset_min"],
+		"href" => $tzOffsetsRestUrl,
+	);
+
+}
+
+function getGeodataViaTeleport( $lat, $lon ) {
+
+	return getUrl(
+		"https://api.teleport.org/api/locations/${lat},${lon}/?embed=location:nearest-cities/location:nearest-city/city:timezone/tz:offsets-now",
+		array( "Accept: application/vnd.teleport.v1+json" )
+	);
+
+}
+	
+function reverseGeoViaOSMNominatim( $lat, $lon ) {
+
+	return getUrl( "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}" );
+}
+
+function getDSTOffsetMin( $jd ) {
+
+	global $locationTZData;
+
+	# fetch DST offset data for the location i) if this is the first call or ii) if the date is outside the known interval
+
+	if ( !isset( $locationTZData )
+		|| $jd <= $locationTZData["transition-time"]
+		|| $jd >= $locationTZData["end-time"] ) {
+
+		$arr = getTimezoneOffset( jd2unix( $jd ) );
+
+		// print_r( $locationTZData );
+
+	}
+
+	$dst = $locationTZData["dst-offset-min"];
+	return $dst;
+}
+
+/*
+
+Source: 
+
+* https://stackoverflow.com/questions/16086962/how-to-get-a-time-zone-from-a-location-using-latitude-and-longitude-coordinates/32437518#32437518
+
+See also:
+
+* http://developers.teleport.org/api/
+* http://developers.teleport.org/api/getting_started/
+
+* step 1: geo-location => timezone [tz:offsets-now]
+  https://api.teleport.org/api/locations/59.4372,24.7453/?embed=location:nearest-cities/location:nearest-city/city:timezone/tz:offsets-now
+
+* step 2: [tz:offsets-now] and change to arbitrary time => offset [total_offset_min]
+  https://api.teleport.org/api/timezones/iana:Europe%2FBerlin/offsets/?date=2018-07-15T05:34:45Z
+
+*/
+
+	# Defaultkoordinaten 52.5N 13.25E "Berlin, Drachenberg"
 
 	echo "Sonnenberechnung aus Bahndaten und Koeffizienten\n";
 
-	$breite = rtrim( readln( "Nördl. Breite          ±dd.dddd°  [52.5°]:"), "°" );
+	$breite = str_replace( ",", ".", rtrim( readln( "Nördl. Breite          ±dd.dddd°  [52.5°]:"), "°" ) );
 	if ( empty( $breite ) ) {
 		$breite = 52.5;
 	}
 
-	$laenge = rtrim( readln( "Östliche Länge        ±ddd.dddd° [13.25°]:"), "°" );
+	$laenge = str_replace( ",", ".", rtrim( readln( "Östliche Länge        ±ddd.dddd° [13.25°]:"), "°" ) );
 	if ( empty( $laenge ) ) {
 		$laenge = 13.25;
+	}
+
+	$geo = reverseGeoViaOSMNominatim( $breite, $laenge );
+
+	if ( $geo !== false ) {
+
+		if ( !isset( $geo['display_name'] ) ) {
+
+			$geo['display_name'] = "unknown place";
+
+		}
+
+		echo "Reverse Geocoding (Nominatim)            : " . $geo['display_name'] . PHP_EOL;
+
+	} else {
+
+		echo "*** Reverse geocoding is currently not available (missing Internet connection?) ***" . PHP_EOL;
+
+	}
+
+	$geodataTeleport = getGeodataViaTeleport( $breite, $laenge );
+
+	if ( $geodataTeleport === false ) {
+
+		echo "The Teleport API is currently not available. The Timezone data for your location $breite/$laenge cannot be determined automatically." . PHP_EOL;
+
+	} else {
+
+		$tzData = getTimezoneData( $geodataTeleport );
+		$tzOffset = getTimezoneOffset( time() );
+
+		if ( $tzOffset !== false ) {
+
+			echo "Timezone                                 : " . $tzData["iana-name"] . PHP_EOL;
+			// echo "Shortname                                : " . $tzOffset["short-name"] . PHP_EOL;
+			// echo "Base offset                              : " . $tzOffset["base-offset-min"] . " min" . PHP_EOL;
+			// echo "DST offset                               : " . $tzOffset["dst-offset-min"] . " min" . PHP_EOL;
+			// echo "Offset                                   : " . $tzOffset["total-offset-min"] . " min" . PHP_EOL;
+
+		} else {
+
+			echo "Timezone offset for your location $breite/$laenge could not be determined automatically." . PHP_EOL;
+
+		}
+		
 	}
 
 	$zeitzoneCalculated = calculatedZeitzone( $laenge );
@@ -89,12 +263,13 @@ function Int($x) {
 	echo "Zeitzone des Rechners                    : " . formatZeitzone( Date( "Z" ) / 3600 ) . "\n";
 	echo "Zeitzone nach Länge                      : " . formatZeitzone( $zeitzoneCalculated ) . "\n";
 
-	$zeitzone = readln( "Zeitzone ±h [" . formatZeitzone( $zeitzoneCalculated ) . " (Zeitzone nach Länge)]:");
+	# $zeitzone = readln( "Zeitzone ±h [" . formatZeitzone( $zeitzoneCalculated ) . " (Zeitzone nach Länge)]:");
 	if ( empty( $zeitzone ) ) {
 		$zeitzone = $zeitzoneCalculated;
 	}
 
-	echo "Zeitzone nach Eingabe: " . formatZeitzone( $zeitzone ) . "\n";
+	# $dst = $tzOffset["dst-offset-min"];
+	# echo "Zeitzone nach Eingabe                    : " . formatZeitzone( $zeitzone ) . " DST: $dst min\n";
 
 	$today = Date( "Y.md" );
 	$date = readln( "Datum       yyyy.mmdd [$today (heute)]:" );
@@ -121,61 +296,58 @@ MF: Mondfinsternis Az: Azimut
 
 HERE;
 
-	echo "Breite: $breite Länge: $laenge Zeitzone: " . formatZeitzone( $zeitzone ) . "\n";
+	echo "Breite: $breite Länge: $laenge Zeitzone: " . formatZeitzone( $zeitzone ) . PHP_EOL;
 	$laenge = $laenge / 360.0;
 
-	list( $j, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $laenge );
 
-	calcSun( $breite, $t );
+	calcSun( $breite, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t );
+	calcMoon( $breite, $t, $jd );
 	echo "\n";
 
-	$vm = NaechsterVM( $j );
+	$vm = NaechsterVM( $jd );
 
 	// echo "VM " . date('d.m.Y H:i:s', jd2unix( $vm ) );
 
-	$pMF = NaechsteMF( $j, 0 ); // partielle MF
-	$tMF = NaechsteMF( $j, 1 ); // totale MF
+	$pMF = NaechsteMF( $jd, 0 ); // partielle MF
+	$tMF = NaechsteMF( $jd, 1 ); // totale MF
 
 	$d = Date( "d.m.Y", jd2unix( $vm - 1.0 ) );
-	list( $j, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $laenge );
 
-	calcSun( $breite, $t );
+	calcSun( $breite, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t );
+	calcMoon( $breite, $t, $jd );
 	echo "\n";
 
 	echo str_repeat( "*", 40 ) . "\n";
-	# echo "VM " . date('d.m.Y H:i:s', jd2unix( $vm ) );
-	echo "VM " . date('H:i:s', jd2unix( $vm ) );
+	echo "VM " . gmdate('H:i:s', jd2unix( $vm ) ) . "Z";
 
 	if ( checkMFtime( $pMF, $vm ) ) {
-		# echo " Partielle MF " . date('d.m.Y H:i:s', jd2unix( $pMF ) ) . "\n";
-		echo " Partielle MF " . date('H:i:s', jd2unix( $pMF ) ) . "\n";
+		echo " Partielle MF " . gmdate('H:i:s', jd2unix( $pMF ) ) . "Z\n";
 	} else	if ( checkMFtime( $tMF, $vm ) ) {
-		# echo " Totale MF " . date('d.m.Y H:i:s', jd2unix( $tMF ) ) . "\n";
-		echo " Totale MF " . date('H:i:s', jd2unix( $tMF ) ) . "\n";
+		echo " Totale MF " . gmdate('H:i:s', jd2unix( $tMF ) ) . "Z\n";
 	} else {
 		echo "\n";
 	}
 	echo str_repeat( "*", 40 ) . "\n";
 	
 	$d = Date( "d.m.Y", jd2unix( $vm ) );
-	list( $j, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $laenge );
 
-	calcSun( $breite, $t );
+	calcSun( $breite, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t );
+	calcMoon( $breite, $t, $jd );
 	echo "\n";
 
 
 	$d = Date( "d.m.Y", jd2unix( $vm + 1.0 ) );
-	list( $j, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm + 1.0 ) ), $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm + 1.0 ) ), $zeitzone, $laenge );
 
-	calcSun( $breite, $t );
+	calcSun( $breite, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t );
+	calcMoon( $breite, $t, $jd );
 	echo "\n";
 
 
@@ -210,7 +382,7 @@ HERE;
 exit;
 
 
-function calcMoon( $breite, $t ) {
+function calcMoon( $breite, $t, $jd ) {
 
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
@@ -259,7 +431,7 @@ function calcMoon( $breite, $t ) {
 		$f2 = $m[3][2];
 		$d2 = Interpolation( $f0, $f1, $f2, $p );
 
-		calcRiseSet( "Moon", $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
+		calcRiseSet( "Moon", $jd, $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
 
 		$a0 = $a2;
 		$d0 = $d2;
@@ -271,7 +443,7 @@ function calcMoon( $breite, $t ) {
 }
 
 
-function calcSun( $breite, $t ) {
+function calcSun( $breite, $t, $jd ) {
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
 
@@ -310,7 +482,7 @@ function calcSun( $breite, $t ) {
 		$a2 = $a[1] + $p * $da;
 		$d2 = $d[1] + $p * $dd;
 
-		calcRiseSet( "Sun", $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
+		calcRiseSet( "Sun", $jd, $hour, $t0, $a0, $a2, $d0, $d2, $v0, $v2, $m8, $w8, $s, $c, $z );
 
 		$a0 = $a2;
 		$d0 = $d2;
@@ -371,7 +543,7 @@ function Kalender( $date, $zeitzone, $laenge ) {
 	$t0 = Zeitzone( $t, $zeitzone, $laenge );
 	$t = $t - $zeitzone / 24.0;
 
-	return array( $jd, $f, $t, $t0 );
+	return array( $jd + 0.5, $f, $t, $t0 );
 }
 
 
@@ -436,9 +608,9 @@ function c( $revolutions ) {
 }
 
 
-function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, &$w8, $s, $c, $z ) {
+function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, &$w8, $s, $c, $z ) {
 
-	global $eventCnt, $Az, $Zh, $Zm, $Zeit;
+	global $eventCnt, $Az, $Zh, $Zm, $Zeit, $locationTZData;
 
 	$l0 = $t0 + $hour * k1;
 	$l2 = $l0 + k1;
@@ -482,6 +654,7 @@ function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, 
 	}
 
 	$t3 = $hour + $e + 1.0 / 120.0;
+
 	$h3 = intval( $t3 );
 	$m3 = intval( getDecimalPart( $t3 ) * 60.0 );
 
@@ -510,7 +683,11 @@ function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, 
 	$Az[$eventCnt] = $a7;
 
 	$azimut = sprintf( "%03.0f", round( $a7, 2 ) );
-	$time = sprintf( "%02d", $h3 ) . ":" . sprintf( "%02d", $m3 );
+	$time2 = sprintf( "%02d", $h3 ) . ":" . sprintf( "%02d", $m3 );
+	$time = $jd + $t3 / 24.0;
+
+	$DSToffsetMin = getDSTOffsetMin( $time );
+	$time = gmdate( "d.m.Y H:i", jd2unix( $jd + ( $t3 + $DSToffsetMin/60.0 ) / 24.0 ) );
 
 	$riseOrSet = "";
 
@@ -527,7 +704,7 @@ function calcRiseSet( $obj, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &$m8, 
 	}
 
 	$object = ( $obj === "Moon" ) ? "M" : "S";
-	echo "$object${riseOrSet} $time Az ${azimut}° ";
+	echo "$object${riseOrSet} ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
 
 	if ( $eventCnt == 2 ) {
 		mittag( $Az, $Zeit );
@@ -794,13 +971,15 @@ function calcVisibility( $obj, $m8, $w8, $v2 ) {
 	$untergang = "";
 	$sichtbar = "";
 
-	$objDE = ( $obj === "Moon" ) ? "Mond" : "Sonne";
 
 	if ( ( $m8 === 0 ) && ( $w8 === 0 ) ) {
 
+		$objDE = ( $obj === "Moon" ) ? "Mond" : "Sonne";
 		$sichtbar = ( $v2 > 0.0 ) ? "$objDE ganztägig sichtbar" : ( ( $v2 < 0.0 ) ? "$objDE ganztätig unsichtbar" : "" );
 
 	} else {
+
+		$objDE = ( $obj === "Moon" ) ? "Mond" : "Sonnen";
 
 		if ( $m8 === 0 ) {
 
@@ -810,7 +989,7 @@ function calcVisibility( $obj, $m8, $w8, $v2 ) {
 
 		if ( $w8 === 0 ) {
 
-		$untergang = "Kein ${objDE}untergang an diesem Tag.\n";
+			$untergang = "Kein ${objDE}untergang an diesem Tag.\n";
 
 		}
 
@@ -838,7 +1017,11 @@ function calcVisibility( $obj, $m8, $w8, $v2 ) {
    PHP's built-in jdtounix does only work for non-decimal Julian dates
 */
 function jd2unix( $jd ) {
-	return ( $jd - 2440587.5) * 86400;
+	return ( $jd - 2440587.5 ) * 86400;
+}
+
+function unix2jd( $unixSecs ) {
+   return ( $unixSecs / 86400 ) + 2440587.5;
 }
 
 function CS( $x ) {
