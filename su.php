@@ -201,17 +201,17 @@ See also:
 
 	echo "Sonnenberechnung aus Bahndaten und Koeffizienten\n";
 
-	$breite = str_replace( ",", ".", rtrim( readln( "Nördl. Breite          ±dd.dddd°  [52.5°]:"), "°" ) );
-	if ( empty( $breite ) ) {
-		$breite = 52.5;
+	$lat = str_replace( ",", ".", rtrim( readln( "Nördl. Breite          ±dd.dddd°  [52.5°]:"), "°" ) );
+	if ( empty( $lat ) ) {
+		$lat = 52.5;
 	}
 
-	$laenge = str_replace( ",", ".", rtrim( readln( "Östliche Länge        ±ddd.dddd° [13.25°]:"), "°" ) );
-	if ( empty( $laenge ) ) {
-		$laenge = 13.25;
+	$lon = str_replace( ",", ".", rtrim( readln( "Östliche Länge        ±ddd.dddd° [13.25°]:"), "°" ) );
+	if ( empty( $lon ) ) {
+		$lon = 13.25;
 	}
 
-	$geo = reverseGeoViaOSMNominatim( $breite, $laenge );
+	$geo = reverseGeoViaOSMNominatim( $lat, $lon );
 
 	if ( $geo !== false ) {
 
@@ -229,11 +229,11 @@ See also:
 
 	}
 
-	$geodataTeleport = getGeodataViaTeleport( $breite, $laenge );
+	$geodataTeleport = getGeodataViaTeleport( $lat, $lon );
 
 	if ( $geodataTeleport === false ) {
 
-		echo "The Teleport API is currently not available. The Timezone data for your location $breite/$laenge cannot be determined automatically." . PHP_EOL;
+		echo "The Teleport API is currently not available. The Timezone data for your location $lat/$lon cannot be determined automatically." . PHP_EOL;
 
 	} else {
 
@@ -250,13 +250,13 @@ See also:
 
 		} else {
 
-			echo "Timezone offset for your location $breite/$laenge could not be determined automatically." . PHP_EOL;
+			echo "Timezone offset for your location $lat/$lon could not be determined automatically." . PHP_EOL;
 
 		}
 		
 	}
 
-	$zeitzoneCalculated = calculatedZeitzone( $laenge );
+	$zeitzoneCalculated = calculatedZeitzone( $lon );
 	
 	/* Eingabe in Stunden, ganzzahlig mit Vorzeichen für E(+) und W(-) */
 
@@ -296,14 +296,14 @@ MF: Mondfinsternis Az: Azimut
 
 HERE;
 
-	echo "Breite: $breite Länge: $laenge Zeitzone: " . formatZeitzone( $zeitzone ) . PHP_EOL;
-	$laenge = $laenge / 360.0;
+	echo "Breite: $lat Länge: $lon Zeitzone: " . formatZeitzone( $zeitzone ) . PHP_EOL;
+	$lon = $lon / 360.0;
 
-	list( $jd, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $lon );
 
-	calcSun( $breite, $t, $jd );
+	calcSun( $lat, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t, $jd );
+	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
 	$vm = NaechsterVM( $jd );
@@ -314,11 +314,11 @@ HERE;
 	$tMF = NaechsteMF( $jd, 1 ); // totale MF
 
 	$d = Date( "d.m.Y", jd2unix( $vm - 1.0 ) );
-	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $lon );
 
-	calcSun( $breite, $t, $jd );
+	calcSun( $lat, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t, $jd );
+	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
 	echo str_repeat( "*", 40 ) . "\n";
@@ -334,20 +334,20 @@ HERE;
 	echo str_repeat( "*", 40 ) . "\n";
 	
 	$d = Date( "d.m.Y", jd2unix( $vm ) );
-	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $lon );
 
-	calcSun( $breite, $t, $jd );
+	calcSun( $lat, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t, $jd );
+	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
 
 	$d = Date( "d.m.Y", jd2unix( $vm + 1.0 ) );
-	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm + 1.0 ) ), $zeitzone, $laenge );
+	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm + 1.0 ) ), $zeitzone, $lon );
 
-	calcSun( $breite, $t, $jd );
+	calcSun( $lat, $t, $jd );
 	echo " ";
-	calcMoon( $breite, $t, $jd );
+	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
 
@@ -382,7 +382,7 @@ HERE;
 exit;
 
 
-function calcMoon( $breite, $t, $jd ) {
+function calcMoon( $lat, $t, $jd ) {
 
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
@@ -407,8 +407,8 @@ function calcMoon( $breite, $t, $jd ) {
 	}
 	
 	$z1 = grad * ( 90.567 - 41.685 / $m[2][3] );
-	$s = sin( $breite * grad );
-	$c = cos( $breite * grad );
+	$s = sin( $lat * grad );
+	$c = cos( $lat * grad );
 	$z = cos( $z1 );
 	$m8 = 0;
 	$w8 = 0	;
@@ -443,7 +443,7 @@ function calcMoon( $breite, $t, $jd ) {
 }
 
 
-function calcSun( $breite, $t, $jd ) {
+function calcSun( $lat, $t, $jd ) {
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
 
@@ -462,8 +462,8 @@ function calcSun( $breite, $t, $jd ) {
 	}
 
 	$z1 = grad * 90.833; // Zenith dist.
-	$s = sin( $breite * grad );
-	$c = cos( $breite * grad );
+	$s = sin( $lat * grad );
+	$c = cos( $lat * grad );
 	$z = cos( $z1 );
 
 	$m8 = 0;
@@ -498,7 +498,7 @@ function calcSun( $breite, $t, $jd ) {
 
 //	Eingabe Jahr Monat und Tag;
 
-function Kalender( $date, $zeitzone, $laenge ) {
+function Kalender( $date, $zeitzone, $lon ) {
 	
 	$year = intval( $date );					// Y = intval (jjjj.mmmtt)  			--> jjjj;
 	$monat = 100.0000001 * ( $date - $year );	// Mm = 100.000001 *(jjjj.mmtt-jjjj) --> mm.tt;
@@ -540,7 +540,7 @@ function Kalender( $date, $zeitzone, $laenge ) {
 
 	# Julian days since 2000 January 1.5 = JD 2451545.0
 	$t = $jd - 2451545.0 + $f;
-	$t0 = Zeitzone( $t, $zeitzone, $laenge );
+	$t0 = Zeitzone( $t, $zeitzone, $lon );
 	$t = $t - $zeitzone / 24.0;
 
 	return array( $jd + 0.5, $f, $t, $t0 );
@@ -551,8 +551,8 @@ function strSign( $i ) {
 	return sign( $i ) ? "+" : "-";
 }
 
-function calculatedZeitzone( $laenge ) {
-	return Int( round( sign( $laenge ) * ( $laenge + 7.5 ) ) / 15 );
+function calculatedZeitzone( $lon ) {
+	return Int( round( sign( $lon ) * ( $lon + 7.5 ) ) / 15 );
 }
 
 function formatZeitzone( $i ) {
@@ -563,11 +563,11 @@ function formatZeitzone( $i ) {
 /*
 	Bezogen auf 0h Zeitzone;
 */
-function Zeitzone( $t, $zeitzone, $laenge ) {
+function Zeitzone( $t, $zeitzone, $lon ) {
 
 	$t0 = $t / 36525.0;
 	$s = 24110.5 + 8640184.813 * $t0;
-	$s += -86636.6 * $zeitzone / 24.0 + 86400.0 * $laenge;
+	$s += -86636.6 * $zeitzone / 24.0 + 86400.0 * $lon;
 	
 	return getDecimalPart( $s / 86400.0 ) * pi2;
 }
