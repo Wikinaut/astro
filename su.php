@@ -134,8 +134,6 @@ function getTimezoneData( $arr ) {
 	$tzData = $arr["_embedded"]["location:nearest-cities"][0]["_embedded"]["location:nearest-city"]["_embedded"]["city:timezone"];
 	$tzOffsetsRestUrl = $tzData["_links"]["tz:offsets"]["href"];
 
-	// print_r( $tzData );
-
 	return array (
 		"iana-name" => $tzData["iana_name"],
 		"base-offset-min" => $tzData["_embedded"]["tz:offsets-now"]["base_offset_min"],
@@ -152,10 +150,21 @@ function getGeodataViaTeleport( $lat, $lon ) {
 	);
 
 }
-	
+
 function reverseGeoViaOSMNominatim( $lat, $lon ) {
 
+	# https://wiki.openstreetmap.org/wiki/Nominatim#Parameters
 	return getUrl( "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}" );
+
+}
+
+function geoViaOSMNominatim( $location ) {
+
+	# https://wiki.openstreetmap.org/wiki/Nominatim#Parameters
+	$res = getUrl( "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&polygon_svg=1&q=" .  rawurlencode( $location ) );
+
+	return array( $res[0]['lat'], $res[0]['lon'] );
+
 }
 
 function getDSTOffsetMin( $jd ) {
@@ -169,8 +178,6 @@ function getDSTOffsetMin( $jd ) {
 		|| $jd >= $locationTZData["end-time"] ) {
 
 		$arr = getTimezoneOffset( jd2unix( $jd ) );
-
-		// print_r( $locationTZData );
 
 	}
 
@@ -201,15 +208,33 @@ See also:
 
 	echo "Sonnenberechnung aus Bahndaten und Koeffizienten\n";
 
-	$lat = str_replace( ",", ".", rtrim( readln( "Nördl. Breite          ±dd.dddd°  [52.5°]:"), "°" ) );
-	if ( empty( $lat ) ) {
-		$lat = 52.5;
+	$latOrLocation = readln( "Breite oder Ort,Straße   ±dd.dd° [52.50°]:" );
+
+	if ( !empty( $latOrLocation ) && preg_match( "![^0-9°., -]!", $latOrLocation ) ) {
+
+		list( $lat, $lon) = geoViaOSMNominatim( $latOrLocation );
+
+	} else {
+
+		if ( empty( $latOrLocation ) ) {
+
+			$lat = 52.5;
+
+		} else {
+
+			$lat = str_replace( ",", ".", rtrim( $input, "°" ) );
+
+		}
+
+		$lon = str_replace( ",", ".", rtrim( readln( "Östliche Länge          ±ddd.dd° [13.25°]:"), "°" ) );
+			if ( empty( $lon ) ) {
+				$lon = 13.25;
+		}
+
 	}
 
-	$lon = str_replace( ",", ".", rtrim( readln( "Östliche Länge        ±ddd.dddd° [13.25°]:"), "°" ) );
-	if ( empty( $lon ) ) {
-		$lon = 13.25;
-	}
+	echo "Latitude                                 : " . $lat . PHP_EOL;
+	echo "Longitude                                : " . $lon . PHP_EOL;
 
 	$geo = reverseGeoViaOSMNominatim( $lat, $lon );
 
