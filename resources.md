@@ -28,6 +28,7 @@ Resources:
 * https://github.com/ypid/suncalc-php PHP. Calculate sun position, sunlight phases, moon position and lunar phase. It is based on the JavaScript implementation created by Vladimir Agafonkin (@mourner) as a part of the SunCalc.net project.
 * http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position Accurate and fast Sun/Moon ephemerides suitable for Android (and iOS) projects
 * https://github.com/mourner/suncalc/issues/106 Moonrise time 4 min deviation · Issue #106 · mourner/suncalc
+* https://github.com/evansiroky/timezone-boundary-builder Timezone map boundary processing
 
 More resources will be added later.
 
