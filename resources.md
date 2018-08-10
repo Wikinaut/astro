@@ -2,7 +2,19 @@ The PHP program calculates the Sun and Moon rise and set times along with the az
 
 	Low-precision formulae for planetary positions
 	Fundamental arguments (Van Flandern & Pulkkinen, 1979)
-	https://doi.org/10.1086/190623
+    https://doi.org/10.1086/190623
+
+based on the BASIC program
+
+	https://astronomy.stackexchange.com/questions/24304/expression-for-length-of-sunrise-sunset-as-function-of-latitude-and-day-of-year
+	Section "Here is an implementation of rising/setting times in Basic"
+	
+The Lunar eclipse calculation uses the Javascript algorithm found on
+
+	https://computus.de/mondphase/mondphase.htm
+	
+which is here ported to PHP.
+
 
 Resources:
 
