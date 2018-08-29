@@ -41,8 +41,11 @@ Resources:
 * http://conga.oan.es/~alonso/doku.php?id=blog:sun_moon_position Accurate and fast Sun/Moon ephemerides suitable for Android (and iOS) projects
 * https://github.com/mourner/suncalc/issues/106 Moonrise time 4 min deviation · Issue #106 · mourner/suncalc
 * https://github.com/evansiroky/timezone-boundary-builder Timezone map boundary processing
+* https://stackoverflow.com/questions/16086962/how-to-get-a-time-zone-from-a-location-using-latitude-and-longitude-coordinates/32437518#32437518
+* http://developers.teleport.org/api/getting_started/
+* step 1: geo-location => timezone [tz:offsets-now] https://api.teleport.org/api/locations/59.4372,24.7453/?embed=location:nearest-cities/location:nearest-city/city:timezone/tz:offsets-now
+* step 2: [tz:offsets-now] and change to arbitrary time => offset [total_offset_min] https://api.teleport.org/api/timezones/iana:Europe%2FBerlin/offsets/?date=2018-07-15T05:34:45Z
 
-More resources will be added later.
 
 A different PHP version can be found here https://gitlab.com/snippets/1729624 .
 
