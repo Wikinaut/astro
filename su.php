@@ -36,6 +36,14 @@
 	define( "grad", pi/180.0 );
 	define( "k1", 15.04107 * grad );
 
+	$ret = setlocale( LC_TIME, "de_DE.UTF8" );
+
+	if ( $ret === false ) {
+
+		echo ( "German Locale de_DE.UTF8 is not supported. Using system default locale instead.\n" );
+
+	}
+
 	$a = array();
 	$d = array();
 	$m = array();
@@ -376,21 +384,21 @@ HERE;
 	echo "\n";
 
 
-	/* 
+/*  */
 	$t = unixtojd() - 1;
 
 	for ( $i = 0; $i < 12; $i++ ) {
 
 		$vm = NaechsterVM( $t );
-		echo "VM " . date('d.m.Y H:i:s', jd2unix( $vm ) );
+		echo "VM " . prDate( $vm );
 
 		$pMF = NaechsteMF( $t, 0 ); // partielle MF
 		$tMF = NaechsteMF( $t, 1 ); // totale MF
 
 		if ( checkMFtime( $pMF, $vm ) ) {
-			echo " Partielle MF " . date('d.m.Y H:i:s', jd2unix( $pMF ) ) . "\n";
+			echo " Partielle MF " . prDate( $pMF ) . "\n";
 		} else	if ( checkMFtime( $tMF, $vm ) ) {
-			echo " Totale MF " . date('d.m.Y H:i:s', jd2unix( $tMF ) ) . "\n";
+			echo " Totale MF " . prDate( $tMF ) . "\n";
 		} else {
 			echo PHP_EOL;
 		}
@@ -402,10 +410,15 @@ HERE;
 
 	}
 
-	*/
+/*	*/
 	
 exit;
 
+function prDate( $jddate ) {
+
+	return strftime( "%a", jd2unix( $jddate ) ) . " " . date( 'd.m.Y H:i:s', jd2unix( $jddate ) );
+
+}
 
 function calcMoon( $lat, $t, $jd ) {
 
