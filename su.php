@@ -379,41 +379,15 @@ HERE;
 	echo "\n";
 
 	}
-
-/*
-	$t = unixtojd() - 1;
-
-	for ( $i = 0; $i < 12; $i++ ) {
-
-		$vm = NaechsterVM( $t );
-		echo "VM " . prDate( $vm );
-
-		$pMF = NaechsteMF( $t, 0 ); // partielle MF
-		$tMF = NaechsteMF( $t, 1 ); // totale MF
-
-		if ( checkMFtime( $pMF, $vm ) ) {
-			echo " Partielle MF " . prDate( $pMF ) . "\n";
-		} else	if ( checkMFtime( $tMF, $vm ) ) {
-			echo " Totale MF " . prDate( $tMF ) . "\n";
-		} else {
-			echo PHP_EOL;
-		}
-
-		$t = $vm + 1;
-
-		// date_default_timezone_set( "GMT" );
-		// echo date('D, d M Y H:i:s T', $nextVM ) . PHP_EOL;
-
-	}
-
-*/
 exit;
+
 
 function prDate( $jddate ) {
 	global $locationTZData;
 	return strftime( "%a", jd2unix( $jddate ) ) . " " . date( 'd.m.Y H:i:s', jd2unix( $jddate ) ) . " " . $locationTZData["short-name"] ;
 
 }
+
 
 function calcMoon( $lat, $t, $jd ) {
 
