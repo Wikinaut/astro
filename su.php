@@ -8,11 +8,11 @@
 	basierend auf:
 	https://astronomy.stackexchange.com/questions/24304/expression-for-length-of-sunrise-sunset-as-function-of-latitude-and-day-of-year
 	Section "Here is an implementation of rising/setting times in Basic"
- 
+
 	Ein unbenannter Spaghetticodefreund 201806
 	20180619 php Version
 	20180701
- 
+
 	Sonnen- und Mondberechnung aus Bahndaten und Koeffizienten
 
 	Low-precision formulae for planetary positions
@@ -64,7 +64,7 @@ function readln( $prompt = '' ) {
 
 		echo "$prompt ";
 		return rtrim( fgets( STDIN ), "\n" );
-	
+
 	}
 
 }
@@ -109,7 +109,7 @@ function getUrl( $url, $acceptHeader = "" ) {
 
 	}
 
-} 
+}
 
 
 function getTimezoneOffset( $timeUTC ) {
@@ -195,7 +195,7 @@ function getDSTOffsetMin( $jd ) {
 
 /*
 
-Source: 
+Source:
 
 * https://stackoverflow.com/questions/16086962/how-to-get-a-time-zone-from-a-location-using-latitude-and-longitude-coordinates/32437518#32437518
 
@@ -286,11 +286,11 @@ See also:
 			echo "Timezone offset for your location $lat/$lon could not be determined automatically." . PHP_EOL;
 
 		}
-		
+
 	}
 
 	$zeitzoneCalculated = calculatedZeitzone( $lon );
-	
+
 	/* Eingabe in Stunden, ganzzahlig mit Vorzeichen für E(+) und W(-) */
 
 	echo "Zeitzone des Rechners                    : " . formatZeitzone( Date( "Z" ) / 3600 ) . "\n";
@@ -321,7 +321,7 @@ https://doi.org/10.1086/190623
 Der Algorithmus zur Mondphasenberechnung stammt aus dem Buch
 "Astronomische Algorithmen" von Jean Meeus. 2. Auflage 1994.
 https://computus.de/mondphase/mondphase.htm (Javascript)
-	
+
 SA: Sonnenaufgang  SU: Sonnenuntergang
 MA: Mondaufgang    MU: Monduntergang
 MF: Mondfinsternis Az: Azimut
@@ -334,57 +334,53 @@ HERE;
 
 	list( $jd, $f, $t, $t0 ) = Kalender( $date, $zeitzone, $lon );
 
+	prDate( $jd );
 	calcSun( $lat, $t, $jd );
-	echo " ";
 	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
-	$vm = NaechsterVM( $jd );
+	$td = $jd - 1;
+	# $td = unixtojd() - 1;
 
-	// echo "VM " . date('d.m.Y H:i:s', jd2unix( $vm ) );
+	for ( $i = 0; $i < 12; $i++ ) {
 
-	$pMF = NaechsteMF( $jd, 0 ); // partielle MF
-	$tMF = NaechsteMF( $jd, 1 ); // totale MF
+	$vm = NaechsterVM( $td );
+
+	$pMF = NaechsteMF( $td, 0 ); // partielle MF
+	$tMF = NaechsteMF( $td, 1 ); // totale MF
+	$td = $vm + 1;
 
 	$d = Date( "d.m.Y", jd2unix( $vm - 1.0 ) );
 	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $lon );
 
+	echo "\n";
+	prDate( $jd );
 	calcSun( $lat, $t, $jd );
-	echo " ";
 	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
-	echo str_repeat( "*", 40 ) . "\n";
-	echo "VM " . gmdate('H:i:s', jd2unix( $vm ) ) . "Z";
+	# UTC echo "VM " . gmdate('H:i:s', jd2unix( $vm ) ) . "Z";
+	echo "VM " . prDate( $vm );
 
 	if ( checkMFtime( $pMF, $vm ) ) {
-		echo " Partielle MF " . gmdate('H:i:s', jd2unix( $pMF ) ) . "Z\n";
+		echo " Partielle MF " . prDate( $pMF ) . "\n";
 	} else	if ( checkMFtime( $tMF, $vm ) ) {
-		echo " Totale MF " . gmdate('H:i:s', jd2unix( $tMF ) ) . "Z\n";
+		echo " Totale MF " . prDate( $tMF ) . "\n";
 	} else {
 		echo "\n";
 	}
-	echo str_repeat( "*", 40 ) . "\n";
-	
+
 	$d = Date( "d.m.Y", jd2unix( $vm ) );
 	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $lon );
 
+	prDate( $jd );
 	calcSun( $lat, $t, $jd );
-	echo " ";
 	calcMoon( $lat, $t, $jd );
 	echo "\n";
 
+	}
 
-	$d = Date( "d.m.Y", jd2unix( $vm + 1.0 ) );
-	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm + 1.0 ) ), $zeitzone, $lon );
-
-	calcSun( $lat, $t, $jd );
-	echo " ";
-	calcMoon( $lat, $t, $jd );
-	echo "\n";
-
-
-/*  */
+/*
 	$t = unixtojd() - 1;
 
 	for ( $i = 0; $i < 12; $i++ ) {
@@ -410,13 +406,12 @@ HERE;
 
 	}
 
-/*	*/
-	
+*/
 exit;
 
 function prDate( $jddate ) {
-
-	return strftime( "%a", jd2unix( $jddate ) ) . " " . date( 'd.m.Y H:i:s', jd2unix( $jddate ) );
+	global $locationTZData;
+	return strftime( "%a", jd2unix( $jddate ) ) . " " . date( 'd.m.Y H:i:s', jd2unix( $jddate ) ) . " " . $locationTZData["short-name"] ;
 
 }
 
@@ -443,7 +438,7 @@ function calcMoon( $lat, $t, $jd ) {
 	if ( $m[3][1] <= $m[2][1] ) {
 		$m[3][1] = $m[3][1] + pi2;
 	}
-	
+
 	$z1 = grad * ( 90.567 - 41.685 / $m[2][3] );
 	$s = sin( $lat * grad );
 	$c = cos( $lat * grad );
@@ -476,7 +471,7 @@ function calcMoon( $lat, $t, $jd ) {
 		$v0 = $v2;
 
 	}
-	
+
 	calcVisibility( "Moon", $m8, $w8, $v2 );
 }
 
@@ -527,7 +522,7 @@ function calcSun( $lat, $t, $jd ) {
 		$v0 = $v2;
 
 	}
-	
+
 	calcVisibility( "Sun", $m8, $w8, $v2 );
 }
 
@@ -537,12 +532,12 @@ function calcSun( $lat, $t, $jd ) {
 //	Eingabe Jahr Monat und Tag;
 
 function Kalender( $date, $zeitzone, $lon ) {
-	
-	$year = intval( $date );					// Y = intval (jjjj.mmmtt)  			--> jjjj;
-	$monat = 100.0000001 * ( $date - $year );	// Mm = 100.000001 *(jjjj.mmtt-jjjj) --> mm.tt;
-	$m = intval( $monat ); 						// M = intval(mm.tt) 					--> mm;
-	$d = 100.0000001 * ( $monat - $m );			// D = 100.000001 * (mm.tt-mm) 		--> tt.tt;
-	$d = intval( $d ); 							// $d = intval(tt.tt) 					--> tt;
+
+	$year = intval( $date );			// Y = intval (jjjj.mmmtt)  		--> jjjj;
+	$monat = 100.0000001 * ( $date - $year );	// Mm = 100.000001 *(jjjj.mmtt-jjjj)	--> mm.tt;
+	$m = intval( $monat ); 				// M = intval(mm.tt) 			--> mm;
+	$d = 100.0000001 * ( $monat - $m );		// D = 100.000001 * (mm.tt-mm)		--> tt.tt;
+	$d = intval( $d ); 				// $d = intval(tt.tt)			--> tt;
 	$g = 1;
 
 	if ( $year < 1583 ) {
@@ -561,7 +556,7 @@ function Kalender( $date, $zeitzone, $lon ) {
 		$j3 = -intval( ( intval( $j3 / 100 ) + 1 ) * 3 / 4 );
 
 	}
-	
+
 	$jd += intval( 275.0 * $m / 9 ) + $d1 + $g * $j3;
 	$jd += 1721027.0 + 2 * $g + 367.0 * $year;
 
@@ -574,7 +569,7 @@ function Kalender( $date, $zeitzone, $lon ) {
 
 	$customDate = date_create( "$d.$m.$year" );
 	# echo date_format( $customDate, "d.m.Y" ) . " JD: " . sprintf( "%.4f", $jd ) . " ";
-	echo date_format( $customDate, "d.m.Y" ) . ": ";
+	# echo date_format( $customDate, "d.m.Y" ) . ": ";
 
 	# Julian days since 2000 January 1.5 = JD 2451545.0
 	$t = $jd - 2451545.0 + $f;
@@ -606,7 +601,7 @@ function Zeitzone( $t, $zeitzone, $lon ) {
 	$t0 = $t / 36525.0;
 	$s = 24110.5 + 8640184.813 * $t0;
 	$s += -86636.6 * $zeitzone / 24.0 + 86400.0 * $lon;
-	
+
 	return getDecimalPart( $s / 86400.0 ) * pi2;
 }
 
@@ -628,7 +623,7 @@ function Interpolation( $f0, $f1, $f2, $p ) {
 
 function sign( $floatNumber ) {
     return ( $floatNumber > 0.0 ) ? 1 : ( ( $floatNumber < 0.0 ) ? -1 : 0 );
-} 
+}
 
 
 function getDecimalPart( $floatNum ) {
@@ -667,9 +662,9 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 		$v0 = $s * sin( $d0 ) + $c * cos( $d0 ) * cos( $h0 ) - $z;
 
 	}
-	
+
 	$v2 = $s * sin( $d2 ) + $c * cos( $d2 ) * cos( $h2 ) - $z;
-	
+
 	if ( sign( $v0 ) === sign( $v2 ) ) {
 		return;
 	}
@@ -684,7 +679,7 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	}
 
 	$d = sqrt( $d );
-	
+
 	$e = ( -$b + $d ) / ( 2.0 * $a );
 
 	if ( ( $e > 1.0 ) || ( $e < 0.0 ) ) {
@@ -709,7 +704,7 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	if ( $d7 < 0.0 ) {
 		$a7 -= 180.0;
 	}
-	
+
 	if ( $a7 < 0.0 ) {
 		$a7 += 360.0;
 	}
@@ -725,12 +720,13 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	$time = $jd + $t3 / 24.0;
 
 	$DSToffsetMin = getDSTOffsetMin( $time );
-	$time = gmdate( "d.m.Y H:i", jd2unix( $jd + ( $t3 + $DSToffsetMin/60.0 ) / 24.0 ) );
+	$tx = jd2unix( $jd + ( $t3 + $DSToffsetMin/60.0 ) / 24.0 );
+	$time = strftime( "%a", $tx ) . " " . gmdate( "d.m.Y H:i", $tx );
 
 	$riseOrSet = "";
 
 	if ( ( $v0 < 0.0 ) && ( $v2 > 0.0 ) ) {
-	
+
 		$m8 = 1;
 		$riseOrSet = "A";
 
@@ -742,39 +738,47 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	}
 
 	$object = ( $obj === "Moon" ) ? "M" : "S";
-	echo "$object${riseOrSet} ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
+	# echo "$object${riseOrSet} ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
+
+	if ( ( $obj === "Moon" ) && ( $riseOrSet == "A" ) ) {
+		echo "MA ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
+	}
+
+	if ( ( $obj === "Sun" ) && ( $riseOrSet == "U" ) ) {
+		echo "SU ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
+	}
 
 	if ( $eventCnt == 2 ) {
-		mittag( $Az, $Zeit );
+		# mittag( $Az, $Zeit );
 		$eventCnt = 0;
 	}
 }
 
-function mittag( $Az, $Zeit ) {	
+function mittag( $Az, $Zeit ) {
 
 	$DeltaAz = $Az[2] - $Az[1];
 	if ( $Az[1] < $Az[2] ) {
 		$DeltaAz = $Az[1] - $Az[2];
 	}
-	
+
 	$AzMittag = $Az[2] + $DeltaAz / 2;
-	
+
 	if ( $AzMittag > 360.0 ) {
 		$AzMittag = $AzMittag - 360.0;
 	}
-	
+
 	$DeltaZ = $Zeit[2] - $Zeit[1];
 
 	if ( $Zeit[2] < $Zeit[1] ) {
 		$DeltaZ = $Zeit[1] - $Zeit[2];
 	}
-	
+
 	$Zmittag = $Zeit[1] + $DeltaZ / 2;
 
 	If ( $Zmittag > 24 ) {
 		$Zmittag = $Zmittag - 24;
 	}
-	
+
 	$std = $Zmittag;
 	$min = ( $Zmittag - Int( $std ) ) * 60.0;
 	$AzMittag = sprintf( "%03.0f", round( $AzMittag, 2 ) );
@@ -972,7 +976,7 @@ function BahndatenSonne( $t ) {
 /*
 	Berechne Refraktion, Radius, Declination;
 */
- 
+
 function Winkel( $obj, $L, $u, $v, $w ) {
 
 	$s = $w / sqrt( $u - $v * $v );
@@ -1068,7 +1072,7 @@ function CS( $x ) {
 function SN( $x ) {
 	return sin( $x * grad );
 }
-  
+
 function Var_o( $k, $t ) {
 	return 124.7746 - 1.5637558 * $k + .0020691 * $t * $t + .00000215 * $t * $t * $t;
 }
@@ -1091,7 +1095,7 @@ function Var_k( $tz, $zeit ) {
     $startday = getDate( jdtounix( $zeit ) );
     return ( $startday['year'] + ( ( $startday['mon'] - 1 ) * 30.4 + $startday['mday'] + $tz) / 365 - 2000) * 12.3685;
 }
-  
+
 function Korrektur( $JDE, $t, $k ) {
     //Zusätzliche Korrekturen
     $JDE += .000325 * SN( 299.77 + .107408 * $k - .009173 * $t * $t ) + .000165 * SN( 251.88 + .016321 * $k ) + .000164 * SN( 251.83 + 26.651886 * $k ) + .000126 * SN( 349.42 + 36.412478 * $k ) + .00011 * SN( 84.66 + 18.206239 * $k );
@@ -1099,7 +1103,7 @@ function Korrektur( $JDE, $t, $k ) {
     $JDE += .000037 * SN( 161.72 + 24.198154 * $k ) + .000035 * SN( 239.56 + 25.513099 * $k ) + .000023 * SN( 331.55 + 3.592518 * $k );
     return $JDE;
 }
-  
+
 function Vollmond( $k ) {
 
 	$k = floor( $k ) + .5;
@@ -1122,7 +1126,7 @@ function Vollmond( $k ) {
 
 function Finsternis( $k, $Typ, $Modus ) {
 
-	/*	Typ:   .5:	Mondfinsternis 
+	/*	Typ:   .5:	Mondfinsternis
 				0:	Sonnenfinsternis
 
 		Modus:	0:	Finsternis partiell
@@ -1172,7 +1176,7 @@ function Finsternis( $k, $Typ, $Modus ) {
 			if ( $Modus == 1 && ( ( 1.0128 - $u - abs( $g ) ) / .545 <= 0 != ( .4678 - $u ) * ( .4678 - $u ) - $g * $g <= 0 ) ) {
 				$JDE = 0; // keine totale Mf
 			}
-	
+
 		} else {
 
 			if ( abs( $g ) > 1.5433 + $u) {
@@ -1200,7 +1204,7 @@ function Finsternis( $k, $Typ, $Modus ) {
 				if ( $Ringtest == 0 && $Modus == 2 ) {
 					$JDE = 0;
 				}
-			
+
 			}
 
       }
@@ -1236,7 +1240,7 @@ function NaechsteMF( $zeit, $Typ ) {
 
 		$k = Var_k( $tz, $zeit );
 		$tz += 1;
-    
+
     }
 
 	while ( ( $mf = Finsternis( $k, .5, $Typ ) ) < $zeit );
