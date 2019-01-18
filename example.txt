@@ -1,0 +1,72 @@
+Sonnenberechnung aus Bahndaten und Koeffizienten
+Latitude                                 : 52.5
+Longitude                                : 13.25
+Reverse Geocoding (Nominatim)            : Teufelsseechaussee, Grunewald, Charlottenburg-Wilmersdorf, Berlin, 14055, Deutschland
+Timezone                                 : Europe/Berlin
+Zeitzone des Rechners                    : UTC+1
+Zeitzone nach Länge                      : UTC+1
+
+Sonnenberechnung aus Bahndaten und Koeffizienten
+
+Low-precision formulae for planetary positions
+Fundamental arguments (Van Flandern & Pulkkinen, 1979)
+https://doi.org/10.1086/190623
+
+Der Algorithmus zur Mondphasenberechnung stammt aus dem Buch
+"Astronomische Algorithmen" von Jean Meeus. 2. Auflage 1994.
+https://computus.de/mondphase/mondphase.htm (Javascript)
+
+SA: Sonnenaufgang  SU: Sonnenuntergang
+MA: Mondaufgang    MU: Monduntergang
+MF: Mondfinsternis Az: Azimut
+
+Breite: 52.5 Länge: 13.25 Zeitzone: UTC+1
+SU Fr 18.01.2019 16:27 CET Az 236° MA Fr 18.01.2019 13:46 CET Az 056° 
+
+SU So 20.01.2019 16:31 CET Az 237° MA So 20.01.2019 15:41 CET Az 054° 
+VM Mo 21.01.2019 06:17:08 CET Totale MF Mo 21.01.2019 06:13:02 CET
+SU Mo 21.01.2019 16:32 CET Az 237° MA Mo 21.01.2019 16:58 CET Az 057° 
+
+SU Mo 18.02.2019 17:25 CET Az 252° MA Mo 18.02.2019 15:46 CET Az 060° 
+VM Di 19.02.2019 16:54:34 CET
+SU Di 19.02.2019 17:27 CET Az 253° MA Di 19.02.2019 17:12 CET Az 067° 
+
+SU Mi 20.03.2019 18:20 CET Az 271° MA Mi 20.03.2019 17:30 CET Az 080° 
+VM Do 21.03.2019 02:43:56 CET
+SU Do 21.03.2019 18:21 CET Az 272° MA Do 21.03.2019 18:55 CET Az 089° 
+
+SU Do 18.04.2019 20:10 CEST Az 289° MA Do 18.04.2019 18:49 CEST Az 094° 
+VM Fr 19.04.2019 13:13:12 CEST
+SU Fr 19.04.2019 20:12 CEST Az 290° MA Fr 19.04.2019 20:11 CEST Az 103° 
+
+SU Fr 17.05.2019 20:59 CEST Az 304° MA Fr 17.05.2019 19:07 CEST Az 108° 
+VM Sa 18.05.2019 23:12:24 CEST
+SU Sa 18.05.2019 21:01 CEST Az 305° MA Sa 18.05.2019 20:26 CEST Az 116° 
+
+SU So 16.06.2019 21:32 CEST Az 312° MA So 16.06.2019 20:35 CEST Az 125° 
+VM Mo 17.06.2019 10:31:51 CEST
+SU Mo 17.06.2019 21:32 CEST Az 312° MA Mo 17.06.2019 21:40 CEST Az 128° 
+
+SU Mo 15.07.2019 21:23 CEST Az 308° MA Mo 15.07.2019 20:28 CEST Az 129° 
+VM Di 16.07.2019 23:39:26 CEST Partielle MF Di 16.07.2019 23:31:59 CEST
+SU Di 16.07.2019 21:22 CEST Az 308° MA Di 16.07.2019 21:16 CEST Az 128° 
+
+SU Mi 14.08.2019 20:35 CEST Az 295° MA Mi 14.08.2019 20:29 CEST Az 122° 
+VM Do 15.08.2019 14:30:30 CEST
+SU Do 15.08.2019 20:33 CEST Az 295° MA Do 15.08.2019 20:56 CEST Az 117° 
+
+SU Fr 13.09.2019 19:28 CEST Az 277° MA Fr 13.09.2019 19:43 CEST Az 106° 
+VM Sa 14.09.2019 06:34:07 CEST
+SU Sa 14.09.2019 19:25 CEST Az 277° MA Sa 14.09.2019 20:01 CEST Az 099° 
+
+SU Sa 12.10.2019 18:20 CEST Az 259° MA Sa 12.10.2019 18:25 CEST Az 094° 
+VM So 13.10.2019 23:09:11 CEST
+SU So 13.10.2019 18:18 CEST Az 258° MA So 13.10.2019 18:41 CEST Az 086° 
+
+SU Mo 11.11.2019 16:20 CET Az 242° MA Mo 11.11.2019 16:22 CET Az 074° 
+VM Di 12.11.2019 14:35:37 CET
+SU Di 12.11.2019 16:19 CET Az 241° MA Di 12.11.2019 16:43 CET Az 066° 
+
+SU Mi 11.12.2019 15:53 CET Az 231° MA Mi 11.12.2019 15:38 CET Az 056° 
+VM Do 12.12.2019 06:13:25 CET
+SU Do 12.12.2019 15:53 CET Az 231° MA Do 12.12.2019 16:16 CET Az 052° 
