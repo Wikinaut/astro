@@ -297,8 +297,11 @@ See also:
 	echo "Zeitzone nach Länge                      : " . formatZeitzone( $zeitzoneCalculated ) . "\n";
 
 	# $zeitzone = readln( "Zeitzone ±h [" . formatZeitzone( $zeitzoneCalculated ) . " (Zeitzone nach Länge)]:");
+
 	if ( empty( $zeitzone ) ) {
+
 		$zeitzone = $zeitzoneCalculated;
+
 	}
 
 	# $dst = $tzOffset["dst-offset-min"];
@@ -306,8 +309,11 @@ See also:
 
 	$today = Date( "Y.md" );
 	$date = readln( "Datum       yyyy.mmdd [$today (heute)]:" );
+
 	if ( empty( $date ) ) {
+
 		$date = $today;
+
 	}
 
 	echo <<<HERE
@@ -390,6 +396,7 @@ exit;
 
 
 function prDate( $jddate ) {
+
 	global $locationTZData;
 	return strftime( "%a", jd2unix( $jddate ) ) . " " . date( 'd.m.Y H:i:s', jd2unix( $jddate ) ) . " " . $locationTZData["short-name"] ;
 
@@ -966,6 +973,7 @@ function BahndatenSonne( $t ) {
 */
 
 	if ( DEBUG ) {
+
 		echo sprintf( "x1: %8.5f", $x1) . "\n";
 		echo sprintf( "x2: %8.5f", $x2) . "\n";
 		echo sprintf( "x3: %8.5f", $x3) . "\n";
@@ -973,6 +981,7 @@ function BahndatenSonne( $t ) {
 		echo sprintf( "x5: %8.5f", $x5 - 1.0) . "\n";
 		echo sprintf( "x7: %8.5f", $x7) . "\n";
 		echo sprintf( "x8: %8.5f", $x8) . "\n";
+
 	}
 
 	$v = 0.39785 * s( $x7 );
@@ -1288,7 +1297,9 @@ function Finsternis( $k, $Typ, $Modus ) {
 
 
 function checkMFtime( $mfTime, $vmTime ) {
+
 	return abs( $mfTime - $vmTime ) < 0.5;
+
 }
 
 function NaechsterVM( $zeit ) {
