@@ -344,39 +344,46 @@ HERE;
 
 	for ( $i = 0; $i < 12; $i++ ) {
 
-	$vm = NaechsterVM( $td );
+		$vm = NaechsterVM( $td );
 
-	$pMF = NaechsteMF( $td, 0 ); // partielle MF
-	$tMF = NaechsteMF( $td, 1 ); // totale MF
-	$td = $vm + 1;
+		$pMF = NaechsteMF( $td, 0 ); // partielle MF
+		$tMF = NaechsteMF( $td, 1 ); // totale MF
+		$td = $vm + 1;
 
-	$d = Date( "d.m.Y", jd2unix( $vm - 1.0 ) );
-	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $lon );
+		$d = Date( "d.m.Y", jd2unix( $vm - 1.0 ) );
+		list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm - 1.0 ) ), $zeitzone, $lon );
 
-	echo "\n";
-	prDate( $jd );
-	calcSun( $lat, $t, $jd );
-	calcMoon( $lat, $t, $jd );
-	echo "\n";
-
-	# UTC echo "VM " . gmdate('H:i:s', jd2unix( $vm ) ) . "Z";
-	echo "VM " . prDate( $vm );
-
-	if ( checkMFtime( $pMF, $vm ) ) {
-		echo " Partielle MF " . prDate( $pMF ) . "\n";
-	} else	if ( checkMFtime( $tMF, $vm ) ) {
-		echo " Totale MF " . prDate( $tMF ) . "\n";
-	} else {
 		echo "\n";
-	}
+		prDate( $jd );
+		calcSun( $lat, $t, $jd );
+		calcMoon( $lat, $t, $jd );
+		echo "\n";
 
-	$d = Date( "d.m.Y", jd2unix( $vm ) );
-	list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $lon );
+		# UTC echo "VM " . gmdate('H:i:s', jd2unix( $vm ) ) . "Z";
+		echo "VM " . prDate( $vm );
 
-	prDate( $jd );
-	calcSun( $lat, $t, $jd );
-	calcMoon( $lat, $t, $jd );
-	echo "\n";
+		if ( checkMFtime( $pMF, $vm ) ) {
+
+			echo " Partielle MF " . prDate( $pMF ) . "\n";
+
+		} else	if ( checkMFtime( $tMF, $vm ) ) {
+
+
+			echo " Totale MF " . prDate( $tMF ) . "\n";
+
+		} else {
+
+			echo "\n";
+
+		}
+
+		$d = Date( "d.m.Y", jd2unix( $vm ) );
+		list( $jd, $f, $t, $t0 ) = Kalender( Date( "Y.md", jd2unix( $vm ) ), $zeitzone, $lon );
+
+		prDate( $jd );
+		calcSun( $lat, $t, $jd );
+		calcMoon( $lat, $t, $jd );
+		echo "\n";
 
 	}
 exit;
@@ -406,11 +413,15 @@ function calcMoon( $lat, $t, $jd ) {
 	}
 
 	if ( $m[2][1] <= $m[1][1] ) {
+
 		$m[2][1] = $m[2][1] + pi2;
+
 	}
 
 	if ( $m[3][1] <= $m[2][1] ) {
+
 		$m[3][1] = $m[3][1] + pi2;
+
 	}
 
 	$z1 = grad * ( 90.567 - 41.685 / $m[2][3] );
@@ -451,6 +462,7 @@ function calcMoon( $lat, $t, $jd ) {
 
 
 function calcSun( $lat, $t, $jd ) {
+
 	global $u, $v, $v2, $w;
 	global $a0, $a2, $c, $d0, $d2, $s, $t0, $z;
 
@@ -465,7 +477,9 @@ function calcSun( $lat, $t, $jd ) {
 	$d[2] = $delta;
 
 	if ( $a[2] < $a[1] ) {
+
 		$a[2] = $a[2] + pi2;
+
 	}
 
 	$z1 = grad * 90.833; // Zenith dist.
@@ -515,7 +529,9 @@ function Kalender( $date, $zeitzone, $lon ) {
 	$g = 1;
 
 	if ( $year < 1583 ) {
+
 		$g = 0;
+
 	}
 
 	$d1 = intval( $d );
@@ -555,15 +571,21 @@ function Kalender( $date, $zeitzone, $lon ) {
 
 
 function strSign( $i ) {
+
 	return sign( $i ) ? "+" : "-";
+
 }
 
 function calculatedZeitzone( $lon ) {
+
 	return Int( round( sign( $lon ) * ( $lon + 7.5 ) ) / 15 );
+
 }
 
 function formatZeitzone( $i ) {
+
 	return "UTC" . strSign( $i ) . abs( $i );
+
 }
 
 
@@ -580,8 +602,10 @@ function Zeitzone( $t, $zeitzone, $lon ) {
 }
 
 function julianCenturiesSince1900( $t ) {
+
 	# Julian centuries since 1900.0
 	return $t / 36525.0 + 1.0 ;
+
 }
 
 /*	3-Punkt Interpolation */
@@ -596,22 +620,30 @@ function Interpolation( $f0, $f1, $f2, $p ) {
 
 
 function sign( $floatNumber ) {
+
     return ( $floatNumber > 0.0 ) ? 1 : ( ( $floatNumber < 0.0 ) ? -1 : 0 );
+
 }
 
 
 function getDecimalPart( $floatNum ) {
+
     return $floatNum - intval( $floatNum );
+
 }
 
 
 function s( $revolutions ) {
+
 	return sin( pi2 * getDecimalPart( $revolutions ) );
+
 }
 
 
 function c( $revolutions ) {
+
 	return cos( pi2 * getDecimalPart( $revolutions ) );
+
 }
 
 
@@ -623,7 +655,9 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	$l2 = $l0 + k1;
 
 	if ( ( $obj === "Moon" ) && ( $a2 < $a0 ) ) {
+
 		$a2 = $a2 + pi2;
+
 	}
 
 	$h0 = $l0 - $a0;
@@ -640,7 +674,9 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	$v2 = $s * sin( $d2 ) + $c * cos( $d2 ) * cos( $h2 ) - $z;
 
 	if ( sign( $v0 ) === sign( $v2 ) ) {
+
 		return;
+
 	}
 
 	$v1 = $s * sin( $d1 ) + $c * cos( $d1 ) * cos( $h1 ) - $z;
@@ -649,7 +685,9 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	$d = $b * $b - 4.0 * $a * $v0;
 
 	if ( $d < 0.0 ) {
+
 		return;
+
 	}
 
 	$d = sqrt( $d );
@@ -657,7 +695,9 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	$e = ( -$b + $d ) / ( 2.0 * $a );
 
 	if ( ( $e > 1.0 ) || ( $e < 0.0 ) ) {
+
 		$e = ( -$b - $d ) / ( 2.0 * $a );
+
 	}
 
 	$t3 = $hour + $e + 1.0 / 120.0;
@@ -676,15 +716,21 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	$a7 = atan( $n7 / $d7 ) / grad;
 
 	if ( $d7 < 0.0 ) {
+
 		$a7 -= 180.0;
+
 	}
 
 	if ( $a7 < 0.0 ) {
+
 		$a7 += 360.0;
+
 	}
 
 	if ( $a7 > 360.0 ) {
+
 		$a7 -= 360.0;
+
 	}
 
 	$Az[$eventCnt] = $a7;
@@ -715,16 +761,22 @@ function calcRiseSet( $obj, $jd, $hour, $t0, $a0, &$a2, $d0, &$d2, &$v0, &$v2, &
 	# echo "$object${riseOrSet} ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
 
 	if ( ( $obj === "Moon" ) && ( $riseOrSet == "A" ) ) {
+
 		echo "MA ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
+
 	}
 
 	if ( ( $obj === "Sun" ) && ( $riseOrSet == "U" ) ) {
+
 		echo "SU ${time} " . $locationTZData["short-name"] . " Az ${azimut}° ";
+
 	}
 
 	if ( $eventCnt == 2 ) {
+
 		# mittag( $Az, $Zeit );
 		$eventCnt = 0;
+
 	}
 }
 
@@ -732,25 +784,33 @@ function mittag( $Az, $Zeit ) {
 
 	$DeltaAz = $Az[2] - $Az[1];
 	if ( $Az[1] < $Az[2] ) {
+
 		$DeltaAz = $Az[1] - $Az[2];
+
 	}
 
 	$AzMittag = $Az[2] + $DeltaAz / 2;
 
 	if ( $AzMittag > 360.0 ) {
+
 		$AzMittag = $AzMittag - 360.0;
+
 	}
 
 	$DeltaZ = $Zeit[2] - $Zeit[1];
 
 	if ( $Zeit[2] < $Zeit[1] ) {
+
 		$DeltaZ = $Zeit[1] - $Zeit[2];
+
 	}
 
 	$Zmittag = $Zeit[1] + $DeltaZ / 2;
 
 	If ( $Zmittag > 24 ) {
+
 		$Zmittag = $Zmittag - 24;
+
 	}
 
 	$std = $Zmittag;
@@ -780,12 +840,14 @@ function BahndatenMond( $t ) {
 	$T = julianCenturiesSince1900( $t );
 
 	if ( DEBUG ) {
+
 		echo sprintf( "x1: %8.5f", $x1) . "\n";
 		echo sprintf( "x2: %8.5f", $x2) . "\n";
 		echo sprintf( "x3: %8.5f", $x3) . "\n";
 		echo sprintf( "x4: %8.5f", $x4) . "\n";
 		echo sprintf( "x5: %8.5f", $x5 - 1.0 ) . "\n";
 		echo sprintf( "x8: %8.5f", $x8) . "\n";
+
 	}
 
 	$v = 0.39558 * s( $x3 + $x5 );
@@ -966,16 +1028,22 @@ function Winkel( $obj, $L, $u, $v, $w ) {
 */
 
 	if ( $obj === "Moon" ) {
+
 		$scalingFactor = 60.40974;
+
 	}
+
 	if ( $obj === "Sun" ) {
+
 		$scalingFactor = 1.00021;
+
 	}
 
 	$rho = $scalingFactor * sqrt( $u );
 
 	// echo "alpha $alpha delta $delta rho $rho\n";
 	return array( $alpha, $delta, $rho );
+
 }
 
 
@@ -1033,54 +1101,82 @@ function calcVisibility( $obj, $m8, $w8, $v2 ) {
    PHP's built-in jdtounix does only work for non-decimal Julian dates
 */
 function jd2unix( $jd ) {
+
 	return ( $jd - 2440587.5 ) * 86400;
+
 }
 
 function unix2jd( $unixSecs ) {
+
    return ( $unixSecs / 86400 ) + 2440587.5;
+
 }
 
 function CS( $x ) {
+
 	return cos( $x * grad );
+
 }
+
 function SN( $x ) {
+
 	return sin( $x * grad );
+
 }
 
 function Var_o( $k, $t ) {
+
 	return 124.7746 - 1.5637558 * $k + .0020691 * $t * $t + .00000215 * $t * $t * $t;
+
 }
 function Var_f( $k, $t ) {
+
 	return 160.7108 + 390.67050274 * $k - .0016341 * $t * $t - .00000227 * $t * $t * $t + .000000011 * $t * $t * $t * $t;
+
 }
 function Var_m1( $k, $t) {
+
 	return 201.5643 + 385.81693528 * $k + .1017438 * $t * $t + .00001239 * $t * $t * $t - .000000058 * $t * $t * $t * $t;
-  }
+
+}
+
 function Var_m( $k, $t ) {
+
 	return 2.5534 + 29.10535669 * $k - .0000218 * $t * $t - .00000011 * $t * $t * $t;
+
 }
+
 function Var_e( $t ) {
+
 	return 1 - .002516 * $t - .0000074 * $t * $t;
+
 }
+
 function Var_JDE( $k, $t ) {
+
 	return 2451550.09765 + 29.530588853 * $k + .0001337 * $t * $t - .00000015 * $t * $t * $t + .00000000073 * $t * $t * $t * $t;
 }
+
 function Var_k( $tz, $zeit ) {
+
     $startday = getDate( jdtounix( $zeit ) );
     return ( $startday['year'] + ( ( $startday['mon'] - 1 ) * 30.4 + $startday['mday'] + $tz) / 365 - 2000) * 12.3685;
+
 }
 
 function Korrektur( $JDE, $t, $k ) {
+
     //Zusätzliche Korrekturen
     $JDE += .000325 * SN( 299.77 + .107408 * $k - .009173 * $t * $t ) + .000165 * SN( 251.88 + .016321 * $k ) + .000164 * SN( 251.83 + 26.651886 * $k ) + .000126 * SN( 349.42 + 36.412478 * $k ) + .00011 * SN( 84.66 + 18.206239 * $k );
     $JDE += .000062 * SN( 141.74 + 53.303771 * $k ) + .00006 * SN( 207.14 + 2.453732 * $k ) + .000056 * SN( 154.84 + 7.30686 * $k ) + .000047 * SN( 34.52 + 27.261239 * $k ) + .000042 * SN( 207.19 + .121824 * $k ) + .00004 * SN( 291.34 + 1.844379 * $k );
     $JDE += .000037 * SN( 161.72 + 24.198154 * $k ) + .000035 * SN( 239.56 + 25.513099 * $k ) + .000023 * SN( 331.55 + 3.592518 * $k );
     return $JDE;
+
 }
 
 function Vollmond( $k ) {
 
-	$k = floor( $k ) + .5;
+    $k = floor( $k ) + .5;
     $t = $k / 1236.85;
 
     $e = Var_e( $t );
@@ -1096,6 +1192,7 @@ function Vollmond( $k ) {
     $JDE += .00004 * SN( 3 * $m ) + .00003 * SN( $m1 + $m - 2 * $f ) + .00003 * SN( 2 * $m1 + 2 * $f) - .00003 * SN( $m1 + $m + 2 * $f) + .00003 * SN( $m1 - $m + 2 * $f) - .00002 * SN( $m1 - $m - 2 * $f) - .00002 * SN( 3 * $m1 + $m );
     $JDE += .00002 * SN( 4 * $m1 );
     return Korrektur( $JDE, $t, $k );
+
 }
 
 function Finsternis( $k, $Typ, $Modus ) {
@@ -1195,6 +1292,7 @@ function checkMFtime( $mfTime, $vmTime ) {
 }
 
 function NaechsterVM( $zeit ) {
+
     $tz = 0;
 
     do {
@@ -1205,9 +1303,11 @@ function NaechsterVM( $zeit ) {
 	} while ( ( $vm = Vollmond( $k ) ) < $zeit );
 
     return $vm;
+
 }
 
 function NaechsteMF( $zeit, $Typ ) {
+
 	$tz = 0;
 
 	do {
@@ -1215,9 +1315,9 @@ function NaechsteMF( $zeit, $Typ ) {
 		$k = Var_k( $tz, $zeit );
 		$tz += 1;
 
-    }
-
-	while ( ( $mf = Finsternis( $k, .5, $Typ ) ) < $zeit );
+ 	} while ( ( $mf = Finsternis( $k, .5, $Typ ) ) < $zeit );
 
 	return $mf;
+
 }
+
