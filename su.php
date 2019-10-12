@@ -1293,9 +1293,9 @@ function checkMFtime( $mfTime, $vmTime ) {
 
 function NaechsterVM( $zeit ) {
 
-    $tz = 0;
+    	$tz = 0;
 
-    do {
+	do {
 
 		$k = Var_k( $tz, $zeit );
 		$tz += 1;
