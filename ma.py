@@ -136,7 +136,7 @@ def main():
     try:
 
         # Wenn der Benutzer Koordinaten eingab
-        if re.match(r'^[0-9.,-]+$', location_name):
+        if re.match(r'^[0-9., -]+$', location_name):
             lat, lon = map(float, location_name.split(','))
             location = geolocator.reverse((lat, lon), exactly_one=True, language='en')
         else:
