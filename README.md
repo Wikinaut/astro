@@ -1,8 +1,17 @@
-Python program to calculate Sun/Moon rise/set times and azimuths, and also Lunar eclipses from latitude/longitude, or worldwide name/address data.
+Python program to calculate Sun/Moon rise/set times and azimuths from latitude/longitude, or worldwide name/address data.
 Calculated times are output in UTC and/or in local time (with correct day light saving time offset).
 
+```ma.py```: Mondaufgang (ma)
 
-Outdated is the older PHP program:
+
+### To do
+
+[ ] add calculation of Lunar exclipses to ma.py
+
+
+### Outdated 
+
+Outdated is the older PHP program su.php:
 
 PHP program to calculate Sun/Moon rise/set times and azimuths, and also Lunar eclipses from latitude/longitude, or worldwide name/address data.
 Calculated times are output in UTC and/or in local time (with correct day light saving time offset).
