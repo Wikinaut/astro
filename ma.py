@@ -173,8 +173,8 @@ def main():
         # Erstelle ein Zeitzonen-Objekt
         local_tz = pytz.timezone(timezone_str)
 
-        moonrise_local = moonrise.datetime().astimezone(local_tz)
-        sunset_local = sunset.datetime().astimezone(local_tz)
+        moonrise_local = localtime(moonrise.datetime())
+        sunset_local = localtime(sunset.datetime())
 
         print()
 
