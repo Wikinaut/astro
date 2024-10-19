@@ -90,7 +90,13 @@ def get_times_for_full_moon_dates(observer, lat, lon, full_moon_dates):
                 'moonrise': localtime(moonrise_day.datetime()),
                 'moon_azimuth': moon_azimuth_day,
                 'sunset': localtime(sunset_day.datetime()),
-                'sun_azimuth': sun_azimuth_day
+                'sun_azimuth': sun_azimuth_day,
+                'text': False
+            })
+
+        results.append({
+                'date': full_moon + timedelta(days=2),
+                'text': " "
             })
 
     return results
@@ -98,14 +104,28 @@ def get_times_for_full_moon_dates(observer, lat, lon, full_moon_dates):
 
 def print_result( result ):
    global local_tz
-   local_date = result['date'].astimezone(local_tz)
-   moonrise_local = result['moonrise'].astimezone(local_tz)
-   sunset_local = result['sunset'].astimezone(local_tz)
-   print(f"{local_date.strftime('%a %d.%m.%Y %Z')} "
-         f"MA {moonrise_local.strftime('%H:%M:%S %Z')} "
-         f"Az {round(result['moon_azimuth'], 0):0>3.0f}° "
-         f"SU {sunset_local.strftime('%H:%M:%S %Z')} "
-         f"Az {round(result['sun_azimuth'], 0):0>3.0f}°")
+   text = result['text']
+
+   if not text:
+
+       local_date = result['date'].astimezone(local_tz)
+       moonrise_local = result['moonrise'].astimezone(local_tz)
+       sunset_local = result['sunset'].astimezone(local_tz)
+       print(f"{local_date.strftime('%a %d.%m.%Y %Z')} "
+             f"MA {moonrise_local.strftime('%H:%M:%S %Z')} "
+             f"Az {round(result['moon_azimuth'], 0):0>3.0f}° "
+             f"SU {sunset_local.strftime('%H:%M:%S %Z')} "
+             f"Az {round(result['sun_azimuth'], 0):0>3.0f}°")
+
+   elif text != " ":
+
+       local_date = result['date'].astimezone(local_tz)
+       print(f"{local_date.strftime('%a %d.%m.%Y %H:%M:%S %Z')} {text}")
+
+   else:
+
+      print()
+
    return
 
 
@@ -197,19 +217,34 @@ def main():
         # Berechne nächste Vollmonde
         today = datetime.utcnow()
         start_date = today # heute
-        end_date = today + timedelta(days=120)  # 120 Tage in die Zukunft
+        end_date = today + timedelta(days=60)
+
+        dates = []
 
         full_moons = get_full_moon_dates(start_date, end_date)
         print("\nDie nächsten Vollmonddaten:")
         for full_moon in full_moons:
             print(full_moon.astimezone(local_tz).strftime('%a %d.%m.%Y %H:%M:%S %Z'))
+            dates.append({
+                'date': full_moon,
+                'moonrise': False, # localtime(moonrise_day.datetime()),
+                'moon_azimuth': False,
+                'sunset': False,
+                'sun_azimuth': False,
+                'text': 'Vollmond'
+            })
 
         # Berechne Zeiten für Vollmonddaten
         results = get_times_for_full_moon_dates(observer, lat, lon, full_moons)
         print("\nZeiten für Mondaufgang und Sonnenuntergang um Vollmond:")
 
         for result in results:
-            print_result(result)
+            dates.append(result)
+
+        sorted_dates = sorted(dates, key=lambda k: k['date'])
+
+        for date in sorted_dates:
+            print_result(date)
 
     except Exception as e:
         print(f"Fehler: {e}")
