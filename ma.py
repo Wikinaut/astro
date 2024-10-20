@@ -220,7 +220,7 @@ def main():
         # Berechne nächste Vollmonde
         today = datetime.utcnow()
         start_date = today # heute
-        end_date = today + timedelta(days=60)
+        end_date = today + timedelta(days=30)
 
         dates = []
 
