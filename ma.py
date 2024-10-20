@@ -111,16 +111,15 @@ def print_result( result ):
        local_date = result['date'].astimezone(local_tz)
        moonrise_local = result['moonrise'].astimezone(local_tz)
        sunset_local = result['sunset'].astimezone(local_tz)
-       print(f"{local_date.strftime('%a %d.%m.%Y %Z')} "
-             f"MA {moonrise_local.strftime('%H:%M:%S %Z')} "
+       print(f"{moonrise_local.strftime('%a %d.%m.%Y MA %H:%M:%S %Z')} "
              f"Az {round(result['moon_azimuth'], 0):0>3.0f}° "
-             f"SU {sunset_local.strftime('%H:%M:%S %Z')} "
+             f"{sunset_local.strftime('SU %H:%M:%S %Z')} "
              f"Az {round(result['sun_azimuth'], 0):0>3.0f}°")
 
-   elif text != " ":
+   elif text == "Vollmond":
 
        local_date = result['date'].astimezone(local_tz)
-       print(f"{local_date.strftime('%a %d.%m.%Y %H:%M:%S %Z')} {text}")
+       print(f"{local_date.strftime('%a %d.%m.%Y Vollmond %H:%M:%S %Z')}")
 
    else:
 
@@ -231,7 +230,7 @@ def main():
             print(full_moon.astimezone(local_tz).strftime('%a %d.%m.%Y %H:%M:%S %Z'))
             dates.append({
                 'date': full_moon,
-                'moonrise': False, # localtime(moonrise_day.datetime()),
+                'moonrise': False,
                 'moon_azimuth': False,
                 'sunset': False,
                 'sun_azimuth': False,
