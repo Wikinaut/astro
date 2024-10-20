@@ -13,38 +13,32 @@ Calculated times are output in UTC and/or in local time (with correct day light 
 
 ```
 ./ma.py 
-Gib den Namen des Ortes oder die Geokoordinaten (lat, lon) ein: berlin
+Gib den Namen des Ortes oder die Geokoordinaten (lat, lon) ein: 
 
-Ort: Berlin, Deutschland
-Ort (reverse geo; English): 48, Leipziger Straße, Friedrichswerder, Mitte, Berlin, 10117, Germany
+Ort: Drachenberg, Teufelsseechaussee, Grunewald, Charlottenburg-Wilmersdorf, Berlin, 14193, Deutschland
+Ort (reverse geo; English): Drachenberg, Teufelsseechaussee, Grunewald, Charlottenburg-Wilmersdorf, Berlin, 14193, Germany
 
-geo:52.510885,13.3989367
-https://www.openstreetmap.org/?mlat=52.510885&mlon=13.3989367#map=14/52.510885/13.3989367
+geo:52.5023685,13.2482422
+https://www.openstreetmap.org/?mlat=52.5023685&mlon=13.2482422#map=14/52.5023685/13.2482422
 
 Daten für den aktuellen Tag:
-MA So 20.10.2024 19:03:30 CEST Az 042°
-SU So 20.10.2024 18:00:15 CEST Az 253°
+MA So 20.10.2024 19:04:11 CEST Az 042°
+SU Mo 21.10.2024 17:58:45 CEST Az 253°
 
 Die nächsten Vollmonddaten:
 Fr 15.11.2024 21:28:28 CET
 So 15.12.2024 09:01:38 CET
-Mo 13.01.2025 22:26:51 CET
 
 Zeiten für Mondaufgang und Sonnenuntergang um Vollmond:
-Do 14.11.2024 CET MA 15:30:42 CET Az 054° SU 16:13:05 CET Az 240°
-Fr 15.11.2024 21:28:28 CET Vollmond
-Fr 15.11.2024 CET MA 15:57:22 CET Az 045° SU 16:11:42 CET Az 239°
-Sa 16.11.2024 CET MA 16:37:21 CET Az 040° SU 16:10:21 CET Az 239°
+Fr 15.11.2024 MA 15:31:21 CET Az 054° SU 16:13:44 CET Az 240°
+Fr 15.11.2024 Vollmond 21:28:28 CET
+Sa 16.11.2024 MA 15:58:03 CET Az 045° SU 16:12:20 CET Az 239°
+So 17.11.2024 MA 16:38:03 CET Az 040° SU 16:10:59 CET Az 239°
 
-Sa 14.12.2024 CET MA 14:26:53 CET Az 042° SU 15:52:36 CET Az 231°
-So 15.12.2024 09:01:38 CET Vollmond
-So 15.12.2024 CET MA 15:15:41 CET Az 039° SU 15:52:43 CET Az 231°
-Mo 16.12.2024 CET MA 16:22:55 CET Az 040° SU 15:52:54 CET Az 231°
-
-So 12.01.2025 CET MA 15:16:43 CET Az 042° SU 16:19:50 CET Az 235°
-Mo 13.01.2025 22:26:51 CET Vollmond
-Mo 13.01.2025 CET MA 16:39:52 CET Az 049° SU 16:21:24 CET Az 235°
-Di 14.01.2025 CET MA 18:03:27 CET Az 058° SU 16:23:00 CET Az 235°
+Sa 14.12.2024 MA 14:27:34 CET Az 042° SU 15:53:15 CET Az 231°
+So 15.12.2024 Vollmond 09:01:38 CET
+So 15.12.2024 MA 15:16:22 CET Az 039° SU 15:53:22 CET Az 231°
+Mo 16.12.2024 MA 16:23:37 CET Az 040° SU 15:53:33 CET Az 231°
 ```
 
 ### Outdated 
