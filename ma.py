@@ -33,6 +33,8 @@ pip install pytz ephem timezonefinder geopy
 
 """
 
+MONTHS=2
+
 import pytz
 import ephem
 import locale
@@ -87,9 +89,9 @@ def get_times_for_full_moon_dates(observer, lat, lon, full_moon_dates):
 
             results.append({
                 'date': full_moon + timedelta(days=delta),
-                'moonrise': localtime(moonrise_day.datetime()),
+                'moonrise': moonrise_day.datetime(),
                 'moon_azimuth': moon_azimuth_day,
-                'sunset': localtime(sunset_day.datetime()),
+                'sunset': sunset_day.datetime(),
                 'sun_azimuth': sun_azimuth_day,
                 'text': False
             })
@@ -108,9 +110,9 @@ def print_result( result ):
 
    if not text:
 
-       local_date = result['date'].astimezone(local_tz)
-       moonrise_local = result['moonrise'].astimezone(local_tz)
-       sunset_local = result['sunset'].astimezone(local_tz)
+       moonrise_local = localtime(result['moonrise'])
+       sunset_local = localtime(result['sunset'])
+
        print(f"{moonrise_local.strftime('%a %d.%m.%Y MA %H:%M:%S %Z')} "
              f"Az {round(result['moon_azimuth'], 0):0>3.0f}° "
              f"{sunset_local.strftime('SU %H:%M:%S %Z')} "
@@ -118,8 +120,7 @@ def print_result( result ):
 
    elif text == "Vollmond":
 
-       local_date = result['date'].astimezone(local_tz)
-       print(f"{local_date.strftime('%a %d.%m.%Y Vollmond %H:%M:%S %Z')}")
+       print(f"{localtime(result['date']).strftime('%a %d.%m.%Y Vollmond %H:%M:%S %Z')}")
 
    else:
 
@@ -219,15 +220,15 @@ def main():
 
         # Berechne nächste Vollmonde
         today = datetime.utcnow()
-        start_date = today # heute
-        end_date = today + timedelta(days=30)
+        start_date = today
+        end_date = today + timedelta(days=30*(MONTHS-1))
 
         dates = []
 
         full_moons = get_full_moon_dates(start_date, end_date)
-        print("\nDie nächsten Vollmonddaten:")
+        print(f"\nDie Vollmonddaten für die nächsten {MONTHS} Monate:")
         for full_moon in full_moons:
-            print(full_moon.astimezone(local_tz).strftime('%a %d.%m.%Y %H:%M:%S %Z'))
+            print(localtime(full_moon).strftime('%a %d.%m.%Y %H:%M:%S %Z'))
             dates.append({
                 'date': full_moon,
                 'moonrise': False,
