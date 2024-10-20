@@ -160,6 +160,10 @@ def main():
             lat, lon = map(float, location_name.split(','))
             location = geolocator.reverse((lat, lon), exactly_one=True, language='en')
         else:
+
+            if location_name == "":
+                location_name = "Berlin, Drachenberg"
+
             location = geolocator.geocode(location_name)
             if location:
                 location_reverse = geolocator.reverse((location.latitude, location.longitude), exactly_one=True, language='en')
