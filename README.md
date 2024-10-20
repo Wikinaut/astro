@@ -13,7 +13,7 @@ Calculated times are output in UTC and/or in local time (with correct day light 
 
 ```
 ./ma.py 
-Gib den Namen des Ortes oder die Geokoordinaten (lat, lon) ein: 
+Gib den Namen des Ortes oder die Geokoordinaten (lat, lon) ein: Berlin, Drachenberg
 
 Ort: Drachenberg, Teufelsseechaussee, Grunewald, Charlottenburg-Wilmersdorf, Berlin, 14193, Deutschland
 Ort (reverse geo; English): Drachenberg, Teufelsseechaussee, Grunewald, Charlottenburg-Wilmersdorf, Berlin, 14193, Germany
