@@ -6,7 +6,7 @@ Calculated times are output in UTC and/or in local time (with correct day light 
 
 ### To do
 
-- [ ] add calculation of Lunar exclipses to ma.py
+- [ ] add calculation of Lunar eclipses to ma.py
 
 
 ### Example
