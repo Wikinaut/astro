@@ -1,13 +1,7 @@
 Python program to calculate Sun/Moon rise/set times and azimuths from latitude/longitude, or worldwide name/address data.
-Calculated times are output in UTC and/or in local time (with correct day light saving time offset).
+Calculated times are output in UTC and/or in local time (with correct day light saving time offset). Lunar eclipses are indicated.
 
 ```ma.py``` Mondaufgang (ma)
-
-
-### To do
-
-- [ ] add calculation of Lunar eclipses to ma.py
-
 
 ### Example
 

@@ -43,6 +43,26 @@ from geopy.geocoders import Nominatim
 from datetime import datetime,timedelta
 from timezonefinder import TimezoneFinder
 
+# colors
+BLACK = '\033[30m'
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m' # orange on some systems
+BLUE = '\033[34m'
+MAGENTA = '\033[35m'
+CYAN = '\033[36m'
+LIGHT_GRAY = '\033[37m'
+DARK_GRAY = '\033[90m'
+BRIGHT_RED = '\033[91m'
+BRIGHT_GREEN = '\033[92m'
+BRIGHT_YELLOW = '\033[93m'
+BRIGHT_BLUE = '\033[94m'
+BRIGHT_MAGENTA = '\033[95m'
+BRIGHT_CYAN = '\033[96m'
+WHITE = '\033[97m'
+RESET = '\033[0m' # called to return to standard terminal text color
+# print(BLACK + "black" + RESET)
+
 def get_astronomical_info(observer):
     # Mondaufgang und Sonnenuntergang berechnen
     moonrise = observer.next_rising(ephem.Moon())
@@ -72,6 +92,42 @@ def get_full_moon_dates(start_date, end_date):
       date = nextfull
 
     return full_moons
+
+
+def is_lunar_eclipse(fullmoon):
+      global observer
+
+      # check for lunar eclipse that fullmoon date
+      # https://gist.github.com/priyadi/e5322666248ee22a81d8e56e84fe1bcb
+      observer.date = fullmoon
+
+      # compute the position of the sun and the moon with respect to the observer
+      moon = ephem.Moon()
+      sun = ephem.Sun()
+
+      moon.compute(observer)
+      sun.compute(observer)
+
+      # calculate the separation between the moon and the sun, convert
+      # it from radians to degrees, subtract it by 180°.
+      # this is basically the separation of the moon from the Earth's
+      # center of umbra.
+      sep = abs((float(ephem.separation(moon, sun)) / 0.01745329252) - 180)
+
+      # eclipse occurs if the separation is less than 1.5°.
+      # this should detect all total and partial eclipses, but is
+      # hit-and-miss for penumbral eclipses.
+      # the number is hardcoded for simplicity. for accuracy it should
+      # however be computed from the distance to the Sun and the Moon.
+
+      # print(f"{fullmoon.strftime('%Y/%m/%d %H:%M:%S')} Mondfinsternis Distance: {sep}")
+
+      if sep < 1.5:
+          ret = True
+      else:
+          ret = False
+
+      return ret
 
 
 def get_times_for_full_moon_dates(observer, lat, lon, full_moon_dates):
@@ -120,7 +176,10 @@ def print_result( result ):
 
    elif text == "Vollmond":
 
-       print(f"{localtime(result['date']).strftime('%a %d.%m.%Y Vollmond %H:%M:%S %Z')}")
+       if is_lunar_eclipse(result['date']):
+           print(f"{BRIGHT_RED}{localtime(result['date']).strftime('%a %d.%m.%Y *** Mondfinsternis *** %H:%M:%S %Z')}{RESET}")
+       else:
+           print(f"{localtime(result['date']).strftime('%a %d.%m.%Y Vollmond %H:%M:%S %Z')}")
 
    else:
 
@@ -145,7 +204,7 @@ def localtime(utc_time):
 
 
 def main():
-    global lat, lon, local_tz
+    global lat, lon, local_tz, observer
 
     locale.setlocale(locale.LC_ALL, '')
     # Geolocator mit User-Agent (irgendein Name unseres Programms)
