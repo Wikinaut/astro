@@ -238,14 +238,6 @@ def main():
             address_full = address
             address = False
 
-        observer = ephem.Observer()
-        observer.lat = str(lat)
-        observer.lon = str(lon)
-        observer.elevation = 0
-        observer.date = datetime.utcnow()
-
-        moonrise, moon_azimuth, sunset, sun_azimuth = get_astronomical_info(observer)
-
         # Finde die Zeitzone des Ortes basierend auf den Koordinaten
         tf = TimezoneFinder()
         timezone_str = tf.timezone_at(lat=lat, lng=lon)
@@ -255,6 +247,35 @@ def main():
 
         # Erstelle ein Zeitzonen-Objekt
         local_tz = pytz.timezone(timezone_str)
+
+        observer = ephem.Observer()
+        observer.lat = str(lat)
+        observer.lon = str(lon)
+        observer.elevation = 0
+
+        # now = datetime.utcnow()
+        # today = datetime.utcnow()
+
+        # now = localtime(datetime.utcnow())
+        # today = datetime(year=now.year, month=now.month, day=now.day, hour=0, minute=1)
+
+        local_now = datetime.now()
+
+        # Mitternacht 00:00 des aktuellen Tages in der lokalen Zeitzone berechnen
+        local_midnight_0000 = datetime(year=local_now.year, month=local_now.month, day=local_now.day, hour=0, minute=0)
+
+        # Lokale Zeitzone abrufen
+        # local_timezone = pytz.timezone('Europe/Berlin')
+        # Hier die entsprechende Zeitzone einfügen
+        local_midnight_0000 = local_tz.localize(local_midnight_0000)
+
+        # Umwandlung in UTC
+        utc_midnight_0000 = local_midnight_0000.astimezone(pytz.utc)
+
+        today = utc_midnight_0000.replace(tzinfo=None) # make the offset-aware object offset-naive
+        observer.date = today
+
+        moonrise, moon_azimuth, sunset, sun_azimuth = get_astronomical_info(observer)
 
         moonrise_local = localtime(moonrise.datetime())
         sunset_local = localtime(sunset.datetime())
@@ -270,15 +291,22 @@ def main():
 
         print(f"geo:{lat},{lon}")
         print(f"https://www.openstreetmap.org/?mlat={lat}&mlon={lon}#map=14/{lat}/{lon}")
+        print(f"https://www.timeanddate.com/moon/@{lat},{lon}")
+
         print()
-        print("Daten für den aktuellen Tag:")
+
+        # Ausgabe des Datetime-Werts in local time und UTC
+        print(f"Local time für Mitternacht des aktuellen Tages: {local_midnight_0000.strftime('%a %d.%m.%Y %H:%M:%S %Z')}")
+        print(f"UTC-Wert für Mitternacht des aktuellen Tages: {utc_midnight_0000.strftime('%a %d.%m.%Y %H:%M:%S %Z')}")
+
+        print()
+        print("Daten für den Mondaufgang des heutigen Tages:")
         print(f"MA {moonrise_local.strftime('%a %d.%m.%Y %H:%M:%S %Z')} "
               f"Az {round(moon_azimuth, 0):0>3.0f}°")
         print(f"SU {sunset_local.strftime('%a %d.%m.%Y %H:%M:%S %Z')} "
               f"Az {round(sun_azimuth, 0):0>3.0f}°")
 
         # Berechne nächste Vollmonde
-        today = datetime.utcnow()
         start_date = today
         end_date = today + timedelta(days=30*(MONTHS-1))
 
