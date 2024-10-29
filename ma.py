@@ -34,6 +34,7 @@ pip install pytz ephem timezonefinder geopy
 """
 
 MONTHS=2
+default_location = "Berlin, Drachenberg"
 
 import pytz
 import ephem
@@ -210,7 +211,7 @@ def main():
     # Geolocator mit User-Agent (irgendein Name unseres Programms)
     geolocator = Nominatim(user_agent="moon_sun_info_app")
 
-    location_name = input("Gib den Namen des Ortes oder die Geokoordinaten (lat, lon) ein: ")
+    location_name = input(f"Gib den Namen des Ortes oder die Geokoordinaten (lat, lon) ein (default: {default_location}): ")
 
     try:
 
@@ -221,7 +222,7 @@ def main():
         else:
 
             if location_name == "":
-                location_name = "Berlin, Drachenberg"
+                location_name = default_location
 
             location = geolocator.geocode(location_name)
             if location:
